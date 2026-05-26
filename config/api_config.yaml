@@ -1,0 +1,3 @@
+# API Configuration
+# Placeholder — API settings are currently in server/main.py.
+# Future: extract rate limits, auth config, pricing tiers here.

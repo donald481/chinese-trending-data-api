@@ -1,0 +1,434 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Arbitrage - 中文热点数据API",
+    "description": "8平台中文热点数据聚合API（微博/百度/知乎/抖音/B站/今日头条等）。提供真实热度值、英译标题、行业标签、变现建议。每12小时自动更新。\n\n### 数据亮点\n- **8大平台** 覆盖微博、百度、知乎、抖音、B站、今日头条\n- **98%+ LLM增强率** 每条数据经DeepSeek AI翻译+标签+变现分析\n- **真实热度** 非AI估值，来自各平台真实数据\n- **自动更新** 每12小时全自动爬取+富化\n\n### 适用场景\n- 跨境电商选品决策\n- 海外媒体中文热点监测\n- 投资热点追踪\n- 自媒体内容策划\n- 竞品舆情分析",
+    "version": "2.2.0",
+    "contact": {
+      "email": "jkk542830@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://161.153.56.113:8900",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    }
+  ],
+  "x-schema-groups": {
+    "description": "⚠️ Graphify 发现: schemas 定义同时承担了认证结构、业务响应和统计格式三重职责，内聚度低。",
+    "suggestion": "如未来迁移至手动管理的 OpenAPI 规范，建议将以下 3 组 schema 拆分为独立文件，通过 $ref 引用。",
+    "groups": {
+      "auth": {
+        "description": "认证相关模型",
+        "file": "schemas/auth.yaml",
+        "schemas": [
+          "apiKey (securitySchemes)"
+        ]
+      },
+      "business": {
+        "description": "业务响应模型",
+        "file": "schemas/business.yaml",
+        "schemas": [
+          "TrendResponse"
+        ]
+      },
+      "stats": {
+        "description": "统计格式模型",
+        "file": "schemas/stats.yaml",
+        "schemas": [
+          "StatsResponse"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY",
+        "description": "Your API key. Subscribe to a plan on RapidAPI to get one.",
+        "x-schema-group": "auth",
+        "x-domain": "auth",
+        "x-domain-description": "API鉴权结构"
+      }
+    },
+    "schemas": {
+      "TrendResponse": {
+        "type": "object",
+        "x-schema-group": "business",
+        "description": "热点数据响应模型——核心业务数据",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "唯一ID"
+          },
+          "keyword": {
+            "type": "string",
+            "description": "中文热点关键词"
+          },
+          "source": {
+            "type": "string",
+            "description": "数据来源: weibo/baidu/zhihu/douyin/bilibili/toutiao/baidu_api/weibo_api"
+          },
+          "title": {
+            "type": "string",
+            "description": "热点标题"
+          },
+          "content_clean": {
+            "type": "string",
+            "description": "中文摘要"
+          },
+          "source_url": {
+            "type": "string",
+            "description": "原文链接"
+          },
+          "heat": {
+            "type": "integer",
+            "description": "真实热度值"
+          },
+          "rank": {
+            "type": "integer",
+            "description": "排名"
+          },
+          "heat_level": {
+            "type": "string",
+            "description": "热度等级: viral/top/hot/normal",
+            "enum": [
+              "viral",
+              "top",
+              "hot",
+              "normal",
+              "trending"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "description": "聚类标签"
+          },
+          "tags": {
+            "type": "string",
+            "description": "行业标签（逗号分隔）"
+          },
+          "translated_title": {
+            "type": "string",
+            "description": "英文翻译标题"
+          },
+          "translated_content": {
+            "type": "string",
+            "description": "英文翻译摘要"
+          },
+          "monetization_tags": {
+            "type": "string",
+            "description": "变现标签（逗号分隔），如: Car Accessories, EV Charging Equipment"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "更新时间"
+          }
+        },
+        "x-domain": "business",
+        "x-domain-description": "核心业务数据结构——热点数据响应"
+      },
+      "StatsResponse": {
+        "type": "object",
+        "x-schema-group": "stats",
+        "description": "数据统计响应模型——聚合统计格式",
+        "properties": {
+          "total_trends": {
+            "type": "integer",
+            "description": "总数据条数"
+          },
+          "sources": {
+            "type": "object",
+            "description": "各来源数据量分布"
+          },
+          "heat_levels": {
+            "type": "object",
+            "description": "各热度等级数据量分布"
+          },
+          "avg_heat": {
+            "type": "number",
+            "description": "平均热度值"
+          },
+          "max_heat": {
+            "type": "integer",
+            "description": "最高热度值"
+          },
+          "categories": {
+            "type": "object",
+            "description": "各分类数据量分布"
+          },
+          "last_updated": {
+            "type": "string",
+            "description": "最后更新时间"
+          }
+        },
+        "x-domain": "stats",
+        "x-domain-description": "数据统计/聚合响应格式"
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "健康检查",
+        "description": "检查API服务是否正常运行",
+        "tags": [
+          "System"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "服务正常",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "healthy",
+                  "version": "2.2.0",
+                  "database": "clean_data.db",
+                  "sources": 8
+                }
+              }
+            }
+          }
+        },
+        "x-domain": "infra"
+      }
+    },
+    "/v1/stats": {
+      "get": {
+        "summary": "数据统计（无需Key）",
+        "description": "查看数据大盘——总数、来源分布、热度层级、分类分布。无需API Key。",
+        "tags": [
+          "Public"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "统计信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
+                },
+                "example": {
+                  "total_trends": 248,
+                  "sources": {
+                    "weibo": 30,
+                    "baidu": 30,
+                    "zhihu": 30,
+                    "douyin": 30,
+                    "bilibili": 40,
+                    "toutiao": 29,
+                    "baidu_api": 30,
+                    "weibo_api": 29
+                  },
+                  "heat_levels": {
+                    "viral": 144,
+                    "hot": 40,
+                    "top": 5,
+                    "normal": 59
+                  },
+                  "avg_heat": 3813495,
+                  "max_heat": 17155173,
+                  "last_updated": "2026-05-22 03:59:20"
+                }
+              }
+            }
+          }
+        },
+        "x-domain": "stats"
+      }
+    },
+    "/v1/trends/search": {
+      "get": {
+        "summary": "搜索热点数据",
+        "description": "核心查询接口，支持关键词搜索、平台筛选、热度过滤、排序、分页。",
+        "tags": [
+          "Data"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "关键词搜索（模糊匹配标题/标签）",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "数据来源: weibo/baidu/zhihu/douyin/bilibili/toutiao/baidu_api/weibo_api",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "分类: 科技/娱乐/社会/汽车/体育/财经/生活",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "heat_level",
+            "in": "query",
+            "description": "热度等级: viral/top/hot/normal",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "viral",
+                "top",
+                "hot",
+                "normal"
+              ]
+            }
+          },
+          {
+            "name": "min_heat",
+            "in": "query",
+            "description": "最低热度值",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "max_heat",
+            "in": "query",
+            "description": "最高热度值",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "排序: heat_desc/heat_asc/rank_asc/newest",
+            "schema": {
+              "type": "string",
+              "default": "heat_desc"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回条数(1-100)",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "分页偏移",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "热点数据列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrendResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API Key无效"
+          }
+        },
+        "x-domain": "business"
+      }
+    },
+    "/v1/trends/sample": {
+      "get": {
+        "summary": "随机采样",
+        "description": "随机获取N条数据预览——让客户快速了解数据质量",
+        "tags": [
+          "Data"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "采样条数(1-10)",
+            "schema": {
+              "type": "integer",
+              "default": 3,
+              "minimum": 1,
+              "maximum": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "采样数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrendResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-domain": "business"
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "文档站主页",
+        "description": "完整的API文档、数据统计、定价方案可视化页面",
+        "tags": [
+          "Public"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTML文档页",
+            "content": {
+              "text/html": {}
+            }
+          }
+        },
+        "x-domain": "business"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Public",
+      "description": "无需鉴权的公开接口"
+    },
+    {
+      "name": "Data",
+      "description": "核心数据查询接口（需API Key）"
+    },
+    {
+      "name": "System",
+      "description": "系统状态接口"
+    }
+  ]
+}

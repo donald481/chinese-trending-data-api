@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinese Trending Data API — Real-time Hot Topics from 8 Platforms</title>
+<meta name="description" content="Access real-time Chinese trending data from Weibo, Baidu, Zhihu, Douyin, Bilibili & more. LLM-enriched with English translations, monetization tags & heat scores. Free tier available.">
+<meta name="keywords" content="Chinese trending API, Weibo hot search, Baidu trending, Zhihu hot topics, Douyin trends, Chinese social media API, real-time China data, Chinese news API">
+<meta property="og:title" content="Chinese Trending Data API — 8 Platforms, 3500+ Trends Daily">
+<meta property="og:description" content="Real-time hot topics from China's top 8 platforms. LLM-enhanced with English translations & monetization tags.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://161.153.56.113:8900/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chinese Trending Data API">
+<meta name="twitter:description" content="Real-time trending data from 8 Chinese platforms. Free tier available.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<style>
+:root { --bg: #0a0a0f; --card: #13131a; --border: #1e1e2e; --text: #c4c4d0; --heading: #e8e8f0; --accent: #6c5ce7; --accent2: #00b894; --accent3: #fd79a8; --muted: #6c6c80; --rapid: #1a1a2e; --rapid-accent: #0d93f2; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+.container { max-width:1100px; margin:0 auto; padding:0 20px; }
+header { padding:30px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+header h1 { font-size:1.8rem; color:var(--heading); display:flex; align-items:center; gap:10px; }
+header h1 span { background:var(--accent); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:4px; }
+header p { color:var(--muted); margin-top:4px; }
+.cta-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 24px; background:var(--rapid-accent); color:#fff; border-radius:8px; font-weight:600; font-size:0.95rem; text-decoration:none; transition:all .2s; }
+.cta-btn:hover { background:#0b7dd6; text-decoration:none; transform:translateY(-1px); box-shadow:0 4px 15px rgba(13,147,242,.3); }
+.cta-btn svg { width:18px; height:18px; }
+.hero { padding:40px 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+.stat-card .num { font-size:2rem; font-weight:700; color:var(--heading); }
+.stat-card .label { font-size:0.8rem; color:var(--muted); margin-top:4px; }
+.upgrade-banner { background:linear-gradient(135deg, #1a1a3e, #0d2137); border:1px solid var(--rapid-accent); border-radius:12px; padding:24px 30px; margin:20px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+.upgrade-banner h3 { color:var(--heading); font-size:1.2rem; }
+.upgrade-banner p { color:var(--muted); font-size:0.9rem; margin-top:4px; }
+section { padding:30px 0; border-bottom:1px solid var(--border); }
+section:last-child { border-bottom:none; }
+h2 { font-size:1.4rem; color:var(--heading); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+h3 { font-size:1rem; color:var(--heading); margin:12px 0 6px; }
+.endpoint { background:var(--card); border:1px solid var(--border); border-radius:10px; margin:12px 0; padding:16px; }
+.endpoint .method { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem; }
+.method.get { background:#0984e333; color:#74b9ff; }
+.endpoint .url { font-family:'SF Mono','Fira Code',monospace; font-size:0.85rem; color:var(--heading); margin-left:8px; }
+.endpoint .desc { margin:8px 0 4px; font-size:0.9rem; }
+.endpoint code { background:#1e1e2e; padding:1px 5px; border-radius:3px; font-size:0.8rem; }
+.endpoint .badge { display:inline-block; padding:1px 6px; border-radius:3px; font-size:0.7rem; margin-left:6px; }
+.badge.free { background:#00b89433; color:#55efc4; }
+.badge.paid { background:#6c5ce733; color:#a29bfe; }
+table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:8px 0; }
+th, td { padding:8px 12px; text-align:left; border-bottom:1px solid var(--border); }
+th { color:var(--muted); font-weight:500; }
+td { font-family:'SF Mono','Fira Code',monospace; font-size:0.8rem; }
+td:first-child { color:var(--accent2); }
+.sample-grid { display:grid; gap:10px; }
+.why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+.why-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; }
+.why-card .icon { font-size:1.6rem; margin-bottom:8px; }
+.why-card h4 { color:var(--heading); font-size:1rem; margin-bottom:4px; }
+.why-card p { font-size:0.85rem; color:var(--muted); }
+.pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:16px 0; }
+.plan { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; text-align:center; position:relative; }
+.plan.featured { border-color:var(--rapid-accent); }
+.plan.featured .badge { position:absolute; top:-10px; right:20px; background:var(--rapid-accent); color:#fff; padding:2px 10px; border-radius:4px; font-size:0.7rem; }
+.plan h3 { font-size:1.1rem; color:var(--heading); margin:0 0 6px; }
+.plan .price { font-size:2rem; font-weight:700; color:var(--heading); margin:8px 0; }
+.plan .price span { font-size:0.8rem; color:var(--muted); }
+.plan ul { list-style:none; padding:0; margin:12px 0; }
+.plan li { padding:4px 0; font-size:0.85rem; }
+.plan .btn { display:inline-block; margin-top:12px; padding:8px 24px; border-radius:6px; border:none; cursor:pointer; font-size:0.85rem; }
+.btn.primary { background:var(--rapid-accent); color:#fff; }
+footer { text-align:center; padding:30px 0; color:var(--muted); font-size:0.8rem; }
+footer a { margin:0 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div>
+<h1>🔥 Chinese Trending Data API <span>v2.2</span></h1>
+<p>Real-time hot topics from 8 Chinese platforms — LLM-enriched with English translations & monetization tags</p>
+</div>
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="cta-btn" target="_blank">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+Subscribe on RapidAPI
+</a>
+</header>
+
+<div class="hero" id="live-stats">
+<div class="stat-card"><div class="num" id="stat-total">—</div><div class="label">Total Trends</div></div>
+<div class="stat-card"><div class="num" id="stat-sources">—</div><div class="label">Data Sources</div></div>
+<div class="stat-card"><div class="num" id="stat-viral">—</div><div class="label">Viral Topics</div></div>
+<div class="stat-card"><div class="num" id="stat-maxheat">—</div><div class="label">Peak Heat Score</div></div>
+<div class="stat-card"><div class="num" id="stat-avgheat">—</div><div class="label">Avg Heat Score</div></div>
+<div class="stat-card"><div class="num" id="stat-last">—</div><div class="label">Last Updated</div></div>
+</div>
+
+<div class="upgrade-banner">
+<div>
+<h3>🚀 Free Tier: 5 calls/day</h3>
+<p>Subscribe on RapidAPI for unlimited access — 500+ calls/day, full data fields, priority support</p>
+</div>
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="cta-btn" target="_blank">View Plans →</a>
+</div>
+
+<section>
+<h2>📡 Data Sources</h2>
+<div class="endpoint">
+<div class="desc">
+<strong>Weibo</strong> · <strong>Baidu</strong> · <strong>Zhihu</strong> · <strong>Douyin (TikTok CN)</strong> · <strong>Bilibili</strong> · <strong>Toutiao</strong> · <strong>Baidu Realtime</strong> · <strong>Weibo Realtime</strong>
+</div>
+<div class="desc" style="color:var(--muted);font-size:0.85rem;">
+3,500+ trends per cycle, updated every 4 hours. Coverage spans 8 major Chinese content platforms with heat scores from 0 to 99M+.
+</div>
+</div>
+</section>
+
+<section>
+<h2>💡 Why This API?</h2>
+<div class="why-grid">
+<div class="why-card"><div class="icon">🌐</div><h4>English-Ready</h4><p>Every trend comes with LLM-generated English translation of title & content — no Chinese knowledge needed.</p></div>
+<div class="why-card"><div class="icon">💰</div><h4>Monetization Tags</h4><p>AI-generated tags suggest how to monetize each trend: content ideas, product angles, ad opportunities.</p></div>
+<div class="why-card"><div class="icon">🔥</div><h4>Real Heat Scores</h4><p>Native platform heat scores (Weibo: millions of reads, Baidu: search index, Zhihu: views) — not scraped counts.</p></div>
+<div class="why-card"><div class="icon">⚡</div><h4>8 Platforms, 1 API</h4><p>Stop scraping 8 different sites. One endpoint, unified schema, consistent quality.</p></div>
+<div class="why-card"><div class="icon">🔄</div><h4>Auto-Updated</h4><p>Pipeline runs every 4 hours with automated scraping, deduplication, and LLM enrichment.</p></div>
+<div class="why-card"><div class="icon">🏷️</div><h4>Rich Categories</h4><p>60+ categories: tech, finance, entertainment, sports, news, gaming, food, culture & more.</p></div>
+</div>
+</section>
+
+<section>
+<h2>🔌 API Endpoints</h2>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/health</span>
+<span class="badge free">Free</span>
+<div class="desc">Health check (no API key required)</div>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<a href="/v1/stats" class="url">/v1/stats</a>
+<span class="badge free">Free</span>
+<div class="desc">Dashboard stats — total count, source distribution, heat levels (no API key required)</div>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/trends/search</span>
+<span class="badge free">Free 3/day</span>
+<span class="badge paid">Paid Unlimited</span>
+<div class="desc">Search trending topics with powerful filters</div>
+<h3>Parameters</h3>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>keyword</td><td>string</td><td>Fuzzy search (title/tags)</td></tr>
+<tr><td>source</td><td>string</td><td>weibo / baidu / zhihu / douyin / bilibili / toutiao / baidu_api / weibo_api</td></tr>
+<tr><td>category</td><td>string</td><td>tech / entertainment / finance / sports / news / society / car / health / gaming ...</td></tr>
+<tr><td>heat_level</td><td>string</td><td>viral / top / hot / normal / trending</td></tr>
+<tr><td>min_heat</td><td>int</td><td>Minimum heat score filter</td></tr>
+<tr><td>max_heat</td><td>int</td><td>Maximum heat score filter</td></tr>
+<tr><td>sort_by</td><td>string</td><td>heat_desc / heat_asc / rank_asc / newest</td></tr>
+<tr><td>limit</td><td>int</td><td>1-100, default 20</td></tr>
+<tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
+</table>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -H "X-RapidAPI-Key: YOUR_KEY" \\
+  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/search?source=baidu&heat_level=viral&limit=5"
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/trends/sample</span>
+<span class="badge free">Free 2/day</span>
+<span class="badge paid">Paid Unlimited</span>
+<div class="desc">Random sample preview — see data quality before subscribing</div>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>count</td><td>int</td><td>1-10 items, default 3</td></tr>
+</table>
+</div>
+</section>
+
+<section>
+<h2>📊 Live Data Preview</h2>
+<div class="sample-grid" id="sample-data">
+<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;">
+<div style="color:var(--muted);">Loading live stats...</div>
+</div>
+</div>
+</section>
+
+<section>
+<h2>💰 Pricing</h2>
+<div class="pricing-grid">
+<div class="plan">
+<h3>Free Tier</h3>
+<div class="price">Free</div>
+<ul>
+<li>5 calls/day</li>
+<li>Basic data fields</li>
+<li>Public stats</li>
+<li>Content preview only</li>
+</ul>
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="btn primary">Get Started Free</a>
+</div>
+<div class="plan featured">
+<span class="badge">Popular</span>
+<h3>Basic</h3>
+<div class="price">$29 <span>/mo</span></div>
+<ul>
+<li>500 calls/day</li>
+<li>All 8 platforms</li>
+<li>7-day history</li>
+<li>Full English translations</li>
+<li>Monetization tags</li>
+</ul>
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="btn primary">Subscribe</a>
+</div>
+<div class="plan">
+<h3>Pro</h3>
+<div class="price">$99 <span>/mo</span></div>
+<ul>
+<li>3,000 calls/day</li>
+<li>All 8 platforms</li>
+<li>30-day history</li>
+<li>Full data + rich tags</li>
+<li>Priority support</li>
+</ul>
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="btn primary">Subscribe</a>
+</div>
+<div class="plan">
+<h3>Enterprise</h3>
+<div class="price">Contact Us</div>
+<ul>
+<li>Unlimited calls</li>
+<li>Custom data feeds</li>
+<li>SLA guarantee</li>
+<li>Private deployment</li>
+</ul>
+<a href="mailto:jkk542830@gmail.com" class="btn primary">Contact</a>
+</div>
+</div>
+</section>
+
+<section>
+<h2>🔗 Use Cases</h2>
+<div class="why-grid">
+<div class="why-card"><div class="icon">📰</div><h4>Content Creators</h4><p>Discover what's trending in China before it goes global. Create timely content that captures the wave.</p></div>
+<div class="why-card"><div class="icon">📈</div><h4>Market Analysts</h4><p>Track Chinese consumer sentiment in real-time. Identify emerging trends before they peak.</p></div>
+<div class="why-card"><div class="icon">🤖</div><h4>AI/ML Developers</h4><p>Feed trending data into your models. Build trend prediction, cross-cultural analysis, or content recommendation systems.</p></div>
+<div class="why-card"><div class="icon">🛒</div><h4>E-commerce</h4><p>Spot product trends early. Align inventory and marketing with what Chinese consumers are searching for.</p></div>
+</div>
+</section>
+
+<footer>
+Chinese Trending Data API v2.2 · Data updated every 4h ·
+<a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" target="_blank">RapidAPI</a> ·
+<a href="mailto:jkk542830@gmail.com">Contact</a>
+</footer>
+</div>
+
+<script>
+const RAPIDAPI_URL = "https://rapidapi.com/jkk542830/api/chinese-trending-data-api";
+
+async function loadStats() {
+  try {
+    let r = await fetch('/v1/stats');
+    let d = await r.json();
+    document.getElementById('stat-total').textContent = (d.total_trends || 0).toLocaleString();
+    document.getElementById('stat-sources').textContent = Object.keys(d.sources || {}).length + ' platforms';
+    document.getElementById('stat-viral').textContent = (d.heat_levels && d.heat_levels.viral) ? (d.heat_levels.viral).toLocaleString() : '0';
+    document.getElementById('stat-maxheat').textContent = d.max_heat ? (d.max_heat/10000).toFixed(0)+'万' : '—';
+    document.getElementById('stat-avgheat').textContent = d.avg_heat ? (d.avg_heat/10000).toFixed(0)+'万' : '—';
+    document.getElementById('stat-last').textContent = d.last_updated ? new Date(d.last_updated).toLocaleString('en-US') : '—';
+    loadSamples(d);
+  } catch(e) { console.error(e); }
+}
+
+function loadSamples(stats) {
+  try {
+    let categories = stats.categories ? Object.entries(stats.categories).slice(0,10) : [];
+    let sources = stats.sources || {};
+    let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
+    categories.forEach(([c,n]) => { html += '<span style="background:#1e1e2e;padding:3px 10px;border-radius:12px;font-size:0.8rem;color:var(--accent2);">'+c+' ('+n+')</span>'; });
+    html += '</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+    for(let [s,n] of Object.entries(sources)) {
+      html += '<span style="background:#1e1e2e;padding:4px 10px;border-radius:6px;font-size:0.8rem;"><b>'+s+'</b> '+n+' trends</span>';
+    }
+    html += '</div>';
+    html += '<div style="margin-top:12px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:8px;text-align:center;">';
+    html += '<p style="color:var(--muted);">Want to see actual trend data with titles, translations & monetization tags?</p>';
+    html += '<a href="'+RAPIDAPI_URL+'" style="display:inline-block;margin-top:8px;padding:8px 20px;background:var(--rapid-accent);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">Try Free on RapidAPI →</a>';
+    html += '</div>';
+    document.getElementById('sample-data').innerHTML = html;
+  } catch(e) { console.error(e); }
+}
+loadStats();
+</script>
+</body>
+</html>

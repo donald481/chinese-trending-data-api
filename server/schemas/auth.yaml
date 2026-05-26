@@ -1,0 +1,13 @@
+# ─── 认证相关模型 ───
+# 职责：API鉴权结构
+# 本文件为 openapi.json schemas 的按职责拆分参考文件
+# FastAPI 自动生成 OpenAPI 规范，不直接加载此文件
+# 如未来迁移至手动管理的 OpenAPI 规范，可将此 $ref 引入
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+      description: "Your API key. Subscribe to a plan on RapidAPI to get one."

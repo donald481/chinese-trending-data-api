@@ -1,0 +1,19 @@
+[Unit]
+Description=Arbitrage API Server (8-source Chinese Trending Data)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/arbitrage_api
+Environment="DEEPSEEK_API_KEY=sk-36b76cc1ad4a4bce892b2e7414b60477"
+Environment="DEEPSEEK_BASE_URL=https://api.deepseek.com"
+Environment="RAPIDAPI_PROXY_SECRET=a60e7d10-55f2-11f1-be12-0d2664e8db0c"
+ExecStart=/home/ubuntu/projects/arbitrage_api/venv/bin/uvicorn server.main:app --host 0.0.0.0 --port 8900
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/ubuntu/projects/arbitrage_api/logs/server.log
+StandardError=append:/home/ubuntu/projects/arbitrage_api/logs/server.log
+
+[Install]
+WantedBy=multi-user.target

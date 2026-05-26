@@ -1,0 +1,4 @@
+# Scraper Rules Configuration
+# Placeholder — individual scrapers use hardcoded rules for now.
+# Future: extract scraping selectors, delays, and headers here
+# for centralized management and hot-reload.
