@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Response Example</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1270px; height: 760px;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Monaco', monospace;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 40%, #141430 70%, #0f0f23 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(99,102,241,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 70%, rgba(168,85,247,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .container {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%;
+    padding: 40px 60px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 100px;
+    padding: 6px 18px;
+    margin-bottom: 24px;
+    color: #a5b4fc; font-size: 12px; font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+  }
+  .header-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header-text h2 {
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #c7d2fe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .header-text p {
+    color: rgba(199,210,254,0.6); font-size: 14px; font-weight: 400;
+  }
+  .terminal {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(15,15,35,0.85);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .terminal-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f57; }
+  .term-dot.y { background: #ffbd2e; }
+  .term-dot.g { background: #28c840; }
+  .term-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px; color: rgba(199,210,254,0.4); margin-left: 8px;
+  }
+  .term-path {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin-left: auto;
+    font-size: 11px; color: rgba(199,210,254,0.25);
+  }
+  .terminal-body {
+    padding: 24px 28px;
+    font-size: 13px; line-height: 1.7;
+    color: #e2e8f0;
+  }
+  .line { white-space: pre-wrap; word-break: break-all; }
+  .line.code-start { color: #a5b4fc; font-weight: 500; }
+  .key { color: #7dd3fc; }
+  .string { color: #86efac; }
+  .number { color: #fbbf24; }
+  .bracket { color: #c7d2fe; }
+  .comment { color: #64748b; font-style: italic; }
+  .indent1 { padding-left: 24px; }
+  .indent2 { padding-left: 48px; }
+  .indent3 { padding-left: 72px; }
+  .accent-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 4px; margin-bottom: 16px;
+  }
+  .endpoint {
+    display: inline-block;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 8px;
+    padding: 4px 14px;
+    margin-top: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px; color: rgba(199,210,254,0.5);
+  }
+  .endpoint span { color: #a5b4fc; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="accent-line"></div>
+    <div class="header-text">
+      <h2>Real-Time API Response</h2>
+      <p>LLM-translated trending data from Chinese social platforms</p>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-header">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <span class="term-title">GET /v1/trends/sample</span>
+        <span class="term-path">~ curl api.chinesetrends.io</span>
+      </div>
+      <div class="terminal-body">
+        <div class="line code-start"><span class="bracket">{</span></div>
+        <div class="line indent1"><span class="key">"keyword"</span>: <span class="string">"嫦娥六号"</span>,</div>
+        <div class="line indent1"><span class="comment">// "Chang'e-6" — lunar mission</span></div>
+        <div class="line indent1"><span class="key">"source"</span>: <span class="string">"Weibo"</span>,</div>
+        <div class="line indent1"><span class="key">"heat"</span>: <span class="number">984</span>,</div>
+        <div class="line indent1"><span class="key">"category"</span>: <span class="string">"science & technology"</span>,</div>
+        <div class="line indent1"><span class="key">"translated_title"</span>: <span class="string">"Chang'e-6 completes first-ever far side sampling mission"</span>,</div>
+        <div class="line indent1"><span class="key">"original_title"</span>: <span class="string">"嫦娥六号完成人类首次月背采样任务"</span>,</div>
+        <div class="line indent1"><span class="key">"monetization_tags"</span>: <span class="bracket">[</span></div>
+        <div class="line indent2"><span class="string">"aerospace"</span>,</div>
+        <div class="line indent2"><span class="string">"space exploration"</span>,</div>
+        <div class="line indent2"><span class="string">"government contracts"</span></div>
+        <div class="line indent1"><span class="bracket">]</span>,</div>
+        <div class="line indent1"><span class="key">"trending_since"</span>: <span class="string">"2025-05-26T08:30:00Z"</span>,</div>
+        <div class="line indent1"><span class="key">"heat_change"</span>: <span class="string">"+12.4%"</span></div>
+        <div class="line code-start"><span class="bracket">}</span></div>
+      </div>
+    </div>
+
+    <div class="endpoint">Try it: <span>GET</span> /v1/trends/sample &nbsp;·&nbsp; <span>GET</span> /v1/trends/all &nbsp;·&nbsp; <span>GET</span> /v1/trends/search?q=keyword</div>
+  </div>
+</body>
+</html>

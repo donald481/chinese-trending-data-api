@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Platform Comparison</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1270px; height: 760px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 35%, #15153a 65%, #0f0f23 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 70%, rgba(168,85,247,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  body::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .container {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%;
+    padding: 40px 60px;
+  }
+  .accent-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 4px; margin-bottom: 16px;
+  }
+  .header-text {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .header-text h2 {
+    font-size: 34px; font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #c7d2fe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-text .sub {
+    color: rgba(199,210,254,0.55); font-size: 14px; margin-top: 6px;
+  }
+  .keyword-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 100px;
+    padding: 4px 20px 4px 16px;
+    margin-bottom: 28px;
+    color: #a5b4fc; font-size: 14px;
+    backdrop-filter: blur(10px);
+  }
+  .keyword-badge .kw { font-weight: 700; color: #e0e7ff; font-size: 16px; }
+
+  .cards-grid {
+    display: flex; gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1060px;
+  }
+  .card {
+    width: 230px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 20px 18px 18px;
+    backdrop-filter: blur(16px);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .card:hover { transform: translateY(-2px); border-color: rgba(99,102,241,0.2); }
+  .plat-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+    margin-bottom: 8px;
+  }
+  .plat-name { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; }
+  .heat-score { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .heat-label { font-size: 11px; color: rgba(199,210,254,0.4); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+  .bar-container {
+    width: 100%; height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    transition: width 0.5s ease;
+  }
+  .bar-fill.high { background: linear-gradient(90deg, #6366f1, #a78bfa); }
+  .bar-fill.med  { background: linear-gradient(90deg, #818cf8, #a5b4fc); }
+  .bar-fill.low  { background: linear-gradient(90deg, #a5b4fc, #c7d2fe); }
+
+  .callout {
+    margin-top: 24px;
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.15);
+    border-radius: 14px;
+    padding: 12px 28px;
+    color: rgba(199,210,254,0.7);
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+  }
+  .callout strong { color: #e0e7ff; font-weight: 600; }
+  .callout .arrow { color: #6366f1; font-size: 18px; }
+
+  /* Platform colors */
+  .ic-weibo { background: linear-gradient(135deg, #e6162d, #ff4d6d); }
+  .ic-baidu { background: linear-gradient(135deg, #2932e1, #4a56ff); }
+  .ic-zhihu { background: linear-gradient(135deg, #0066ff, #3399ff); }
+  .ic-douyin { background: linear-gradient(135deg, #010101, #444); }
+  .ic-bilibili { background: linear-gradient(135deg, #00a1d6, #00d4ff); }
+  .ic-toutiao { background: linear-gradient(135deg, #f04142, #ff6b6b); }
+  .ic-xiaohongshu { background: linear-gradient(135deg, #ff2442, #ff6b81); }
+  .ic-tieba { background: linear-gradient(135deg, #44b8ea, #87ceeb); }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="accent-line"></div>
+    <div class="header-text">
+      <h2>Cross-Platform Comparison</h2>
+      <p class="sub">Compare how any keyword trends across all 8 Chinese platforms simultaneously</p>
+    </div>
+
+    <div class="keyword-badge">
+      🔍 Keyword: <span class="kw">"AI"</span> &nbsp;·&nbsp; <span>人工智能</span> &nbsp;·&nbsp; Live Data
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="plat-icon ic-weibo">W</div>
+        <div class="plat-name">Weibo</div>
+        <div class="heat-score">982</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill high" style="width: 98%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-baidu">B</div>
+        <div class="plat-name">Baidu</div>
+        <div class="heat-score">921</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill high" style="width: 92%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-zhihu">Z</div>
+        <div class="plat-name">Zhihu</div>
+        <div class="heat-score">765</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill med" style="width: 77%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-douyin">DY</div>
+        <div class="plat-name">Douyin</div>
+        <div class="heat-score">1,000</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill high" style="width: 100%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-bilibili">BV</div>
+        <div class="plat-name">Bilibili</div>
+        <div class="heat-score">687</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill med" style="width: 69%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-toutiao">TT</div>
+        <div class="plat-name">Toutiao</div>
+        <div class="heat-score">834</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill high" style="width: 83%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-xiaohongshu">XS</div>
+        <div class="plat-name">Xiaohongshu</div>
+        <div class="heat-score">542</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill low" style="width: 54%"></div></div>
+      </div>
+      <div class="card">
+        <div class="plat-icon ic-tieba">TB</div>
+        <div class="plat-name">Tieba</div>
+        <div class="heat-score">418</div>
+        <div class="heat-label">Heat Score</div>
+        <div class="bar-container"><div class="bar-fill low" style="width: 42%"></div></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="arrow">⚡</span>
+      See how <strong>any topic</strong> trends across ALL 8 platforms simultaneously with a single API call
+    </div>
+  </div>
+</body>
+</html>

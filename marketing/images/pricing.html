@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing Tiers</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1270px; height: 760px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 35%, #15153a 65%, #0f0f23 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 15%, rgba(99,102,241,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(168,85,247,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 70%, rgba(52,211,153,0.04) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  body::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .container {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%;
+    padding: 40px 60px;
+  }
+  .accent-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 4px; margin-bottom: 16px;
+  }
+  .header-text {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .header-text h2 {
+    font-size: 36px; font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #c7d2fe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-text .sub {
+    color: rgba(199,210,254,0.5); font-size: 14px; margin-top: 6px;
+  }
+
+  .tiers {
+    display: flex; gap: 20px;
+    justify-content: center;
+    width: 100%;
+    max-width: 960px;
+  }
+  .tier {
+    flex: 1;
+    max-width: 290px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 28px 24px 26px;
+    backdrop-filter: blur(16px);
+    display: flex; flex-direction: column;
+    position: relative;
+    transition: all 0.25s ease;
+  }
+  .tier:hover {
+    transform: translateY(-3px);
+    border-color: rgba(99,102,241,0.2);
+    box-shadow: 0 12px 40px rgba(99,102,241,0.06);
+  }
+  .tier.featured {
+    background: rgba(99,102,241,0.06);
+    border-color: rgba(99,102,241,0.25);
+    box-shadow: 0 0 30px rgba(99,102,241,0.08);
+  }
+  .tier.featured:hover {
+    border-color: rgba(99,102,241,0.4);
+    box-shadow: 0 12px 50px rgba(99,102,241,0.12);
+  }
+
+  /* Badge */
+  .offer-badge {
+    position: absolute; top: -10px; right: 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+  }
+
+  .tier-name {
+    font-size: 15px; font-weight: 600; color: rgba(199,210,254,0.7);
+    text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 6px;
+  }
+  .tier-price {
+    font-size: 42px; font-weight: 800; color: #fff;
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+  }
+  .tier-price .currency { font-size: 24px; color: rgba(199,210,254,0.5); }
+  .tier-price .period { font-size: 16px; font-weight: 500; color: rgba(199,210,254,0.35); }
+  .tier-desc {
+    font-size: 13px; color: rgba(199,210,254,0.4);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .features {
+    list-style: none;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+  .features li {
+    font-size: 13px; color: rgba(199,210,254,0.55);
+    padding: 5px 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .features li .check { color: #22c55e; font-size: 14px; flex-shrink: 0; }
+  .features li .cross { color: rgba(255,255,255,0.15); font-size: 14px; flex-shrink: 0; }
+  .features li.highlight { color: rgba(199,210,254,0.8); }
+
+  .cta-btn {
+    display: block; width: 100%; text-align: center;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none; cursor: pointer;
+  }
+  .cta-btn.ghost {
+    background: rgba(255,255,255,0.04);
+    color: rgba(199,210,254,0.6);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .cta-btn.ghost:hover { background: rgba(255,255,255,0.06); color: rgba(199,210,254,0.8); }
+  .cta-btn.primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.25);
+  }
+  .cta-btn.primary:hover {
+    box-shadow: 0 6px 24px rgba(99,102,241,0.35);
+    transform: translateY(-1px);
+  }
+
+  .free-label {
+    display: inline-block;
+    background: rgba(34,197,94,0.1);
+    color: #22c55e;
+    font-size: 12px; font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="accent-line"></div>
+    <div class="header-text">
+      <h2>Simple, Transparent Pricing</h2>
+      <p class="sub">Start free, scale as you grow. No hidden fees, no commitments.</p>
+    </div>
+
+    <div class="tiers">
+      <!-- Free -->
+      <div class="tier">
+        <div class="tier-name">Free</div>
+        <div class="tier-price"><span class="currency">$</span>0<span class="period">/mo</span></div>
+        <div class="tier-desc">Explore the API with sample data</div>
+        <ul class="features">
+          <li><span class="check">✓</span> 100 requests / day</li>
+          <li><span class="check">✓</span> /v1/trends/sample access</li>
+          <li><span class="check">✓</span> 1 platform only</li>
+          <li><span class="cross">✗</span> Real-time data</li>
+          <li><span class="cross">✗</span> Webhooks</li>
+          <li><span class="cross">✗</span> LLM translation</li>
+        </ul>
+        <a class="cta-btn ghost">Get Started</a>
+      </div>
+
+      <!-- Basic -->
+      <div class="tier featured">
+        <div class="offer-badge">PH50 - 20% OFF</div>
+        <div class="tier-name">Basic</div>
+        <div class="tier-price"><span class="currency">$</span>29<span class="period">/mo</span></div>
+        <div class="tier-desc">For individual developers &amp; creators</div>
+        <ul class="features">
+          <li class="highlight"><span class="check">✓</span> 10,000 requests / day</li>
+          <li class="highlight"><span class="check">✓</span> All 8 platforms</li>
+          <li class="highlight"><span class="check">✓</span> Real-time data</li>
+          <li><span class="check">✓</span> /v1/trends/all &amp; search</li>
+          <li><span class="check">✓</span> LLM-translated titles</li>
+          <li><span class="cross">✗</span> Webhooks</li>
+        </ul>
+        <a class="cta-btn primary">Subscribe →</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="tier">
+        <div class="offer-badge">PH50 - 20% OFF</div>
+        <div class="tier-name">Pro</div>
+        <div class="tier-price"><span class="currency">$</span>99<span class="period">/mo</span></div>
+        <div class="tier-desc">For teams and serious applications</div>
+        <ul class="features">
+          <li class="highlight"><span class="check">✓</span> 100,000 requests / day</li>
+          <li class="highlight"><span class="check">✓</span> All 8 platforms</li>
+          <li class="highlight"><span class="check">✓</span> Real-time data + webhooks</li>
+          <li><span class="check">✓</span> /v1/trends/compare endpoint</li>
+          <li><span class="check">✓</span> LLM translation + monetization tags</li>
+          <li><span class="check">✓</span> Priority support</li>
+        </ul>
+        <a class="cta-btn primary">Subscribe →</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

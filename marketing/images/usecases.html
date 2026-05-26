@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Cases</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1270px; height: 760px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 35%, #15153a 65%, #0f0f23 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 30%, rgba(99,102,241,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 70%, rgba(168,85,247,0.07) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  body::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .container {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%;
+    padding: 50px 60px;
+  }
+  .accent-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 4px; margin-bottom: 16px;
+  }
+  .header-text {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header-text h2 {
+    font-size: 36px; font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #c7d2fe);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-text .sub {
+    color: rgba(199,210,254,0.5); font-size: 15px; margin-top: 6px;
+  }
+
+  .grid {
+    display: flex; gap: 24px;
+    justify-content: center;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .card {
+    flex: 1;
+    max-width: 220px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 30px 22px 28px;
+    backdrop-filter: blur(16px);
+    text-align: center;
+    transition: all 0.25s ease;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99,102,241,0.2);
+    background: rgba(255,255,255,0.05);
+    box-shadow: 0 12px 40px rgba(99,102,241,0.08);
+  }
+  .icon-wrap {
+    width: 68px; height: 68px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .icon-wrap::after {
+    content: ''; position: absolute; inset: -2px; border-radius: 22px;
+    border: 1.5px solid rgba(255,255,255,0.06);
+  }
+  .icon-bg1 { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.05)); }
+  .icon-bg2 { background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05)); }
+  .icon-bg3 { background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05)); }
+  .icon-bg4 { background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(251,191,36,0.05)); }
+
+  .card h3 {
+    font-size: 17px; font-weight: 700; color: #e2e8f0;
+    margin-bottom: 10px;
+  }
+  .card p {
+    font-size: 13px; line-height: 1.65;
+    color: rgba(199,210,254,0.55);
+  }
+  .card .tag {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .tag1 { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.15); }
+  .tag2 { background: rgba(168,85,247,0.12); color: #c4a0ff; border: 1px solid rgba(168,85,247,0.15); }
+  .tag3 { background: rgba(52,211,153,0.12); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.15); }
+  .tag4 { background: rgba(251,191,36,0.12); color: #fcd34d; border: 1px solid rgba(251,191,36,0.15); }
+
+  .benefits {
+    display: flex; gap: 30px;
+    margin-top: 36px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 14px 36px;
+  }
+  .benefits span {
+    font-size: 13px; color: rgba(199,210,254,0.45);
+  }
+  .benefits strong { color: rgba(199,210,254,0.7); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="accent-line"></div>
+    <div class="header-text">
+      <h2>Built for Everyone</h2>
+      <p class="sub">One API, endless applications — from content strategy to market intelligence</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="icon-wrap icon-bg1">✍️</div>
+        <h3>Content Creators</h3>
+        <p>Discover what's trending in China to create viral, culturally-relevant content that resonates across platforms.</p>
+        <div class="tag tag1">Trend Discovery</div>
+      </div>
+      <div class="card">
+        <div class="icon-wrap icon-bg2">📈</div>
+        <h3>Market Analysts</h3>
+        <p>Track consumer sentiment and emerging trends in real-time for smarter investment and strategy decisions.</p>
+        <div class="tag tag2">Market Intel</div>
+      </div>
+      <div class="card">
+        <div class="icon-wrap icon-bg3">💻</div>
+        <h3>AI Developers</h3>
+        <p>Integrate Chinese trending data into LLMs, agents, and dashboards with clean JSON responses and webhook support.</p>
+        <div class="tag tag3">API Integration</div>
+      </div>
+      <div class="card">
+        <div class="icon-wrap icon-bg4">🛒</div>
+        <h3>E-commerce</h3>
+        <p>Identify trending products and keywords to optimize listings, ad targeting, and cross-border inventory.</p>
+        <div class="tag tag4">Product Intel</div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <span>⚡ <strong>Real-time</strong> data streaming</span>
+      <span>🌐 <strong>LLM-translated</strong> content</span>
+      <span>🔔 <strong>Webhook</strong> alerts</span>
+      <span>📊 <strong>3,577</strong> tracked trends</span>
+    </div>
+  </div>
+</body>
+</html>
