@@ -78,7 +78,7 @@ footer a { margin:0 8px; }
 <div class="container">
 <header>
 <div>
-<h1>🔥 Chinese Trending Data API <span>v2.2</span></h1>
+<h1>🔥 Chinese Trending Data API <span>v2.4</span></h1>
 <p>Real-time hot topics from 8 Chinese platforms — LLM-enriched with English translations & monetization tags</p>
 </div>
 <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="cta-btn" target="_blank">
@@ -98,8 +98,8 @@ Subscribe on RapidAPI
 
 <div class="upgrade-banner">
 <div>
-<h3>🚀 Free Tier: 5 calls/day</h3>
-<p>Subscribe on RapidAPI for unlimited access — 500+ calls/day, full data fields, priority support</p>
+<h3>🚀 New in v2.4: Webhook Notifications & Push Alerts</h3>
+<p>Free Tier: 1 webhook, 6h delay. Subscribe on RapidAPI for up to 10 webhooks with real-time delivery — get push notifications when new trends match your criteria.</p>
 </div>
 <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="cta-btn" target="_blank">View Plans →</a>
 </div>
@@ -147,32 +147,6 @@ Subscribe on RapidAPI
 
 <div class="endpoint">
 <span class="method get">GET</span>
-<span class="url">/v1/trends/search</span>
-<span class="badge free">Free 3/day</span>
-<span class="badge paid">Paid Unlimited</span>
-<div class="desc">Search trending topics with powerful filters</div>
-<h3>Parameters</h3>
-<table>
-<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-<tr><td>keyword</td><td>string</td><td>Fuzzy search (title/tags)</td></tr>
-<tr><td>source</td><td>string</td><td>weibo / baidu / zhihu / douyin / bilibili / toutiao / baidu_api / weibo_api</td></tr>
-<tr><td>category</td><td>string</td><td>tech / entertainment / finance / sports / news / society / car / health / gaming ...</td></tr>
-<tr><td>heat_level</td><td>string</td><td>viral / top / hot / normal / trending</td></tr>
-<tr><td>min_heat</td><td>int</td><td>Minimum heat score filter</td></tr>
-<tr><td>max_heat</td><td>int</td><td>Maximum heat score filter</td></tr>
-<tr><td>sort_by</td><td>string</td><td>heat_desc / heat_asc / rank_asc / newest</td></tr>
-<tr><td>limit</td><td>int</td><td>1-100, default 20</td></tr>
-<tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
-</table>
-<h3>Example</h3>
-<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
-curl -H "X-RapidAPI-Key: YOUR_KEY" \\
-  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/search?source=baidu&heat_level=viral&limit=5"
-</pre>
-</div>
-
-<div class="endpoint">
-<span class="method get">GET</span>
 <span class="url">/v1/trends/sample</span>
 <span class="badge free">Free 2/day</span>
 <span class="badge paid">Paid Unlimited</span>
@@ -181,6 +155,143 @@ curl -H "X-RapidAPI-Key: YOUR_KEY" \\
 <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 <tr><td>count</td><td>int</td><td>1-10 items, default 3</td></tr>
 </table>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/trends/search</span>
+<span class="badge free">Free 3/day</span>
+<span class="badge paid">Paid Unlimited</span>
+<div class="desc"><strong>🔍 Full-text search</strong> — search across keyword, title & content with <code>q</code> parameter. Backward-compatible <code>keyword</code> parameter for tag/title search.</div>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>q</td><td>string</td><td>Full-text search (keyword + title + content)</td></tr>
+<tr><td>keyword</td><td>string</td><td>Fuzzy search (title/tags) — backward compat</td></tr>
+<tr><td>source</td><td>string</td><td>weibo / baidu / zhihu / douyin / bilibili / toutiao / baidu_api / weibo_api</td></tr>
+<tr><td>category</td><td>string</td><td>tech / entertainment / finance / sports / news / society / car / health / gaming ...</td></tr>
+<tr><td>heat_level</td><td>string</td><td>viral / top / hot / normal / trending</td></tr>
+<tr><td>min_heat</td><td>int</td><td>Minimum heat score filter</td></tr>
+<tr><td>max_heat</td><td>int</td><td>Maximum heat score filter</td></tr>
+<tr><td>sort_by</td><td>string</td><td>heat_desc / heat_asc / rank_asc / newest</td></tr>
+<tr><td>limit</td><td>int</td><td>1-100 (free: max 5), default 20</td></tr>
+<tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
+</table>
+<h3>Examples</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+# Full-text search with q parameter
+curl -H "X-RapidAPI-Key: YOUR_KEY" \
+  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/search?q=AI&source=baidu&limit=5"
+
+# Legacy keyword search
+curl -H "X-RapidAPI-Key: YOUR_KEY" \
+  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/search?keyword=雷军&source=baidu&heat_level=viral&limit=5"
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/trends/by-category</span>
+<span class="badge free">Free 3/day</span>
+<span class="badge paid">Paid Unlimited</span>
+<div class="desc"><strong>📂 Category browsing</strong> — browse trends grouped by category with counts. Shows all available categories and their top trends.</div>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>category</td><td>string</td><td>Optional: filter by specific category name</td></tr>
+<tr><td>limit</td><td>int</td><td>Results per category (free: max 5), default 20</td></tr>
+<tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
+</table>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -H "X-RapidAPI-Key: YOUR_KEY" \
+  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/by-category?category=technology&limit=3"
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/trends/compare</span>
+<span class="badge free">Free 3/day</span>
+<span class="badge paid">Paid Unlimited</span>
+<div class="desc"><strong>⚡ Cross-platform comparison (KILLER FEATURE)</strong> — see how a topic ranks across all 8 Chinese platforms. Search once, get results from Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao & more. No other API does this.</div>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>keyword</td><td>string</td><td><strong>Required:</strong> Topic to compare across platforms</td></tr>
+</table>
+<div style="margin-top:8px;padding:8px 12px;background:#1a1a3e;border-radius:6px;font-size:0.85rem;">
+<strong>💎 Paid feature highlight:</strong> Free tier shows 3 platforms comparison. Paid subscribers get all 8 platforms side-by-side with full heat scores & rankings.
+</div>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -H "X-RapidAPI-Key: YOUR_KEY" \
+  "https://chinese-trending-data-api.p.rapidapi.com/v1/trends/compare?keyword=AI"
+</pre>
+</div>
+</section>
+
+<section>
+<h2>🔔 Webhooks — Push Notifications</h2>
+<p style="color:var(--muted);font-size:0.9rem;margin-bottom:12px;">Stop polling! Configure webhooks and get POST notifications when new trends match your criteria. Free tier: 1 webhook, 6-hour delay. Paid: up to 10 webhooks, hourly delivery.</p>
+
+<div class="endpoint">
+<span class="method" style="background:#00b89433;color:#55efc4;">POST</span>
+<span class="url">/v1/webhooks</span>
+<span class="badge free">Free 1</span>
+<span class="badge paid">Paid 10</span>
+<div class="desc"><strong>Create a webhook subscription</strong> — validates URL is reachable, returns webhook ID</div>
+<table>
+<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+<tr><td>url</td><td>string</td><td><strong>Required:</strong> Your callback URL (must be reachable)</td></tr>
+<tr><td>categories</td><td>array</td><td>Optional: filter by categories (e.g. ["科技","娱乐"])</td></tr>
+<tr><td>min_heat</td><td>int</td><td>Optional: minimum heat score filter</td></tr>
+<tr><td>source_filter</td><td>array</td><td>Optional: filter by sources (e.g. ["weibo","baidu"])</td></tr>
+<tr><td>event_type</td><td>string</td><td>Optional: new_trend (default), viral_alert, or daily_digest</td></tr>
+</table>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -X POST http://161.153.56.113:8900/v1/webhooks \
+  -H "X-API-KEY: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://your-server.com/webhook-callback","categories":["科技"],"min_heat":100000,"event_type":"new_trend"}'
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="url">/v1/webhooks</span>
+<span class="badge free">Free</span>
+<span class="badge paid">Paid</span>
+<div class="desc"><strong>List webhooks</strong> — returns all webhooks with status, last delivery, and delivery count</div>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -H "X-API-KEY: YOUR_KEY" \
+  http://161.153.56.113:8900/v1/webhooks
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method" style="background:#e1705533;color:#fab1a0;">DELETE</span>
+<span class="url">/v1/webhooks/{id}</span>
+<span class="badge free">Free</span>
+<span class="badge paid">Paid</span>
+<div class="desc"><strong>Delete a webhook</strong> — permanently removes the webhook subscription</div>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -X DELETE http://161.153.56.113:8900/v1/webhooks/YOUR_WEBHOOK_ID \
+  -H "X-API-KEY: YOUR_KEY"
+</pre>
+</div>
+
+<div class="endpoint">
+<span class="method" style="background:#6c5ce733;color:#a29bfe;">POST</span>
+<span class="url">/v1/webhooks/{id}/test</span>
+<span class="badge free">Free</span>
+<span class="badge paid">Paid</span>
+<div class="desc"><strong>Send test event</strong> — delivers a sample trend payload to verify your webhook endpoint works</div>
+<h3>Example</h3>
+<pre style="background:#1e1e2e;padding:10px;border-radius:6px;font-size:0.8rem;overflow-x:auto;">
+curl -X POST http://161.153.56.113:8900/v1/webhooks/YOUR_WEBHOOK_ID/test \
+  -H "X-API-KEY: YOUR_KEY"
+</pre>
 </div>
 </section>
 
@@ -201,9 +312,10 @@ curl -H "X-RapidAPI-Key: YOUR_KEY" \\
 <div class="price">Free</div>
 <ul>
 <li>5 calls/day</li>
-<li>Basic data fields</li>
+<li>Basic data fields (limited results)</li>
+<li>3-platform comparison only</li>
 <li>Public stats</li>
-<li>Content preview only</li>
+<li>Content preview only (truncated)</li>
 </ul>
 <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" class="btn primary">Get Started Free</a>
 </div>
@@ -257,7 +369,7 @@ curl -H "X-RapidAPI-Key: YOUR_KEY" \\
 </section>
 
 <footer>
-Chinese Trending Data API v2.2 · Data updated every 4h ·
+Chinese Trending Data API v2.4 · Data updated every 4h ·
 <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api" target="_blank">RapidAPI</a> ·
 <a href="mailto:jkk542830@gmail.com">Contact</a>
 </footer>

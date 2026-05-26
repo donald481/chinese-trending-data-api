@@ -1,26 +1,29 @@
-from fastapi import FastAPI, Depends, HTTPException, Security, status, Query, Request
+from fastapi import FastAPI, Depends, HTTPException, Security, status, Query, Request, BackgroundTasks
 from fastapi.security import APIKeyHeader
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 import sqlite3
 import os
 import json
+import uuid
+import asyncio
+import httpx
 from pathlib import Path
 from fastapi.responses import HTMLResponse
 import sys
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime, timedelta
 
 # 添加request_logger模块
 sys.path.insert(0, str(Path(__file__).parent))
 import request_logger
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="Arbitrage High-Value Niche Data API", version="2.2.0",
-              description="多平台中文热点数据API — 真实热度 + LLM增强分析 + 变现建议")
+app = FastAPI(title="Arbitrage High-Value Niche Data API", version="2.4.0",
+              description="多平台中文热点数据API — 真实热度 + LLM增强分析 + 变现建议 + Webhook通知")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -28,7 +31,70 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 FREE_TIER_LIMITS = {
     "/v1/trends/search": 3,
     "/v1/trends/sample": 2,
+    "/v1/trends/by-category": 3,
+    "/v1/trends/compare": 3,
 }
+
+# ─── 数据库路径 ───
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/clean_data.db")
+
+# ─── Webhook SQLite表 ───
+def init_webhooks_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS webhooks (
+            id TEXT PRIMARY KEY,
+            url TEXT NOT NULL,
+            categories TEXT,
+            min_heat INTEGER,
+            source_filter TEXT,
+            event_type TEXT DEFAULT 'new_trend',
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT NOT NULL,
+            last_delivery_at TEXT,
+            delivery_count INTEGER DEFAULT 0,
+            tier TEXT DEFAULT 'free'
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# ─── Webhook Pydantic Models ───
+class WebhookCreateRequest(BaseModel):
+    url: str = Field(..., description="Webhook callback URL")
+    categories: Optional[List[str]] = Field(None, description="Filter: only these categories")
+    min_heat: Optional[int] = Field(None, description="Filter: minimum heat score")
+    source_filter: Optional[List[str]] = Field(None, description="Filter: only these sources")
+    event_type: Optional[str] = Field("new_trend", pattern="^(new_trend|viral_alert|daily_digest)$")
+
+class WebhookCreateResponse(BaseModel):
+    webhook_id: str
+    status: str
+
+class WebhookResponse(BaseModel):
+    id: str
+    url: str
+    categories: Optional[str] = None
+    min_heat: Optional[int] = None
+    source_filter: Optional[str] = None
+    event_type: str
+    is_active: bool
+    created_at: str
+    last_delivery_at: Optional[str] = None
+    delivery_count: int
+    tier: str
+
+# ─── Startup ───
+@app.on_event("startup")
+async def startup():
+    init_webhooks_db()
+    asyncio.create_task(webhook_delivery_loop())
+
+async def get_user_tier(api_key: str) -> str:
+    """Determine user tier: 'free' or 'paid'"""
+    if api_key == "[free]":
+        return "free"
+    return "paid"
 
 # ─── API 鉴权 ───
 # ─── API 鉴权 (支持直接访问 & RapidAPI代理) ───
@@ -116,7 +182,7 @@ async def docs_page():
 # ─── 健康检查 ───
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "version": "2.2.0", "database": "clean_data.db", "sources": 8}
+    return {"status": "healthy", "version": "2.4.0", "database": "clean_data.db", "sources": 8}
 
 
 # ─── API调用日志中间件 ───
@@ -155,6 +221,7 @@ async def log_api_usage(request: Request, call_next):
 @limiter.limit("60/minute")
 async def search_trends(
     request: Request,
+    q: Optional[str] = Query(None, description="🔍 Full-text search across keyword, title & content"),
     keyword: Optional[str] = Query(None, description="关键词搜索（模糊匹配标题/标签）"),
     source: Optional[str] = Query(None, description="数据来源: weibo / baidu / zhihu / douyin / bilibili / toutiao / baidu_api / weibo_api"),
     category: Optional[str] = Query(None, description="分类筛选: 科技 / 娱乐 / 社会 / 汽车等"),
@@ -172,6 +239,7 @@ async def search_trends(
     await check_free_tier_limit(request, api_key)
 
     is_free = (api_key == "[free]")
+    effective_limit = min(limit, 5) if is_free else limit
 
     db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/clean_data.db")
     if not os.path.exists(db_path):
@@ -183,6 +251,13 @@ async def search_trends(
     query = "SELECT id, keyword, source, original_id, title, content_clean, source_url, heat, rank, heat_level, category, tags, translated_title, translated_content, monetization_tags, updated_at FROM clean_trend WHERE 1=1"
     params = []
 
+    # Full-text search via `q` — across keyword, title, and content_clean
+    if q:
+        query += " AND (keyword LIKE ? OR title LIKE ? OR content_clean LIKE ?)"
+        like = f"%{q}%"
+        params.extend([like, like, like])
+
+    # Backward-compatible keyword search (searches keyword, tags, translated_title)
     if keyword:
         query += " AND (keyword LIKE ? OR tags LIKE ? OR translated_title LIKE ?)"
         like = f"%{keyword}%"
@@ -217,7 +292,7 @@ async def search_trends(
     }
     query += sort_map.get(sort_by, " ORDER BY heat DESC, updated_at DESC")
     query += f" LIMIT ? OFFSET ?"
-    params.extend([limit, offset])
+    params.extend([effective_limit, offset])
 
     cursor.execute(query, params)
     rows = cursor.fetchall()
@@ -241,6 +316,172 @@ async def search_trends(
             item.content_clean = (item.content_clean[:120] + "... 🔒") if item.content_clean and len(item.content_clean) > 120 else item.content_clean
 
     return results
+
+
+# ─── Feature 2: By-category browsing ───
+@app.get("/v1/trends/by-category", response_model=dict)
+@limiter.limit("30/minute")
+async def trends_by_category(
+    request: Request,
+    category: Optional[str] = Query(None, description="Filter by specific category name"),
+    limit: int = Query(default=20, ge=1, le=100, description="Results per category (1-100)"),
+    offset: int = Query(default=0, ge=0, description="Pagination offset"),
+    api_key: str = Depends(verify_api_key)
+):
+    """Browse trends grouped by category — shows available categories with counts"""
+
+    await check_free_tier_limit(request, api_key)
+    is_free = (api_key == "[free]")
+    effective_limit = min(limit, 5) if is_free else limit
+
+    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/clean_data.db")
+    if not os.path.exists(db_path):
+        raise HTTPException(status_code=500, detail="Database not initialized.")
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Get all available categories with counts
+    if category:
+        cursor.execute(
+            "SELECT category, COUNT(*) FROM clean_trend WHERE category LIKE ? GROUP BY category ORDER BY COUNT(*) DESC",
+            (f"%{category}%",)
+        )
+    else:
+        cursor.execute(
+            "SELECT category, COUNT(*) FROM clean_trend WHERE category IS NOT NULL AND category != '' GROUP BY category ORDER BY COUNT(*) DESC"
+        )
+    categories_raw = cursor.fetchall()
+
+    result = {}
+    for cat_name, cat_count in categories_raw:
+        if not cat_name:
+            continue
+
+        # For free tier, only return up to 5 results per category
+        per_category_limit = effective_limit
+        cursor.execute(
+            "SELECT id, keyword, source, original_id, title, content_clean, source_url, heat, rank, heat_level, category, tags, translated_title, translated_content, monetization_tags, updated_at FROM clean_trend WHERE category LIKE ? ORDER BY heat DESC LIMIT ? OFFSET ?",
+            (f"%{cat_name}%", per_category_limit, offset)
+        )
+        rows = cursor.fetchall()
+
+        trends = [
+            TrendResponse(
+                id=r[0], keyword=r[1], source=r[2], original_id=r[3],
+                title=r[4], content_clean=r[5], source_url=r[6],
+                heat=r[7], rank=r[8], heat_level=r[9], category=r[10],
+                tags=r[11], translated_title=r[12], translated_content=r[13],
+                monetization_tags=r[14], updated_at=str(r[15])
+            ) for r in rows
+        ]
+
+        # Free tier: truncate sensitive fields
+        if is_free:
+            for item in trends:
+                item.monetization_tags = "🔒 Upgrade to unlock"
+                item.translated_content = (item.translated_content[:80] + "... 🔒") if item.translated_content and len(item.translated_content) > 80 else item.translated_content
+                item.content_clean = (item.content_clean[:120] + "... 🔒") if item.content_clean and len(item.content_clean) > 120 else item.content_clean
+
+        result[cat_name] = {
+            "total_in_category": cat_count,
+            "trends": [t.dict() for t in trends]
+        }
+
+    conn.close()
+
+    return {
+        "categories_count": len(result),
+        "categories": result,
+        "showing": f"{'free (max 5 per category)' if is_free else 'full'}"
+    }
+
+
+# ─── Feature 3: Cross-platform comparison ───
+@app.get("/v1/trends/compare", response_model=dict)
+@limiter.limit("30/minute")
+async def compare_trends(
+    request: Request,
+    keyword: str = Query(..., description="Keyword to compare across platforms"),
+    api_key: str = Depends(verify_api_key)
+):
+    """Cross-platform comparison — see how a topic ranks across all 8 Chinese platforms"""
+
+    await check_free_tier_limit(request, api_key)
+    is_free = (api_key == "[free]")
+
+    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/clean_data.db")
+    if not os.path.exists(db_path):
+        raise HTTPException(status_code=500, detail="Database not initialized.")
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Search for this keyword across all platforms
+    like = f"%{keyword}%"
+    cursor.execute(
+        "SELECT id, keyword, source, original_id, title, content_clean, source_url, heat, rank, heat_level, category, tags, translated_title, translated_content, monetization_tags, updated_at FROM clean_trend WHERE keyword LIKE ? OR title LIKE ? OR content_clean LIKE ? ORDER BY heat DESC",
+        (like, like, like)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    # Group by platform
+    platform_order = ["weibo", "baidu", "zhihu", "douyin", "bilibili", "toutiao", "baidu_api", "weibo_api"]
+    by_platform = {}
+
+    for r in rows:
+        src = r[2]
+        if src not in by_platform:
+            by_platform[src] = {
+                "platform": src,
+                "matches_found": 0,
+                "top_result": None,
+                "max_heat": 0,
+                "best_rank": None
+            }
+
+        by_platform[src]["matches_found"] += 1
+        if r[7] and r[7] > by_platform[src]["max_heat"]:
+            by_platform[src]["max_heat"] = r[7]
+            by_platform[src]["best_rank"] = r[8]
+            by_platform[src]["top_result"] = {
+                "keyword": r[1],
+                "title": r[4],
+                "heat": r[7],
+                "rank": r[8],
+                "heat_level": r[9],
+                "category": r[10]
+            }
+
+    # Sort platforms: those with matches first, then by heat desc
+    platform_order_sorted = sorted(platform_order, key=lambda p: by_platform[p]["max_heat"] if p in by_platform else -1, reverse=True)
+
+    comparison = []
+    limited_platforms = 3 if is_free else 8
+
+    for idx, src in enumerate(platform_order_sorted):
+        if idx >= limited_platforms:
+            break
+        if src in by_platform:
+            comparison.append(by_platform[src])
+        else:
+            comparison.append({
+                "platform": src,
+                "matches_found": 0,
+                "top_result": None,
+                "max_heat": 0,
+                "best_rank": None
+            })
+
+    return {
+        "keyword": keyword,
+        "total_matches": len(rows),
+        "platforms_with_matches": len([p for p in by_platform if by_platform[p]["matches_found"] > 0]),
+        "comparison": comparison,
+        "tier": "free (3 platforms only)" if is_free else "paid (all 8 platforms)",
+        "upgrade_url": "https://rapidapi.com/jkk542830/api/chinese-trending-data-api" if is_free else None
+    }
 
 
 # ─── 数据统计摘要（无需鉴权，用于吸引客户）───
@@ -319,6 +560,301 @@ async def sample_trends(
             item.content_clean = (item.content_clean[:120] + "... 🔒") if item.content_clean and len(item.content_clean) > 120 else item.content_clean
 
     return results
+
+
+# ─── Webhook: Helper Functions ───
+def get_webhook_count_for_tier(api_key: str) -> int:
+    """Get current webhook count for this user by IP."""
+    if api_key == "[free]":
+        return 1  # free tier limit
+    return 10  # paid tier limit
+
+async def validate_webhook_url(url: str) -> bool:
+    """Validate URL is reachable via HEAD request."""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.head(url, follow_redirects=True)
+            return resp.status_code < 500
+    except Exception:
+        return False
+
+async def deliver_webhook(webhook_id: str, url: str, trend_data: dict) -> bool:
+    """Send a POST request to a webhook URL with trend data."""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(url, json=trend_data, headers={
+                "Content-Type": "application/json",
+                "User-Agent": "ArbitrageAPI-Webhook/2.4.0"
+            })
+            success = 200 <= resp.status_code < 300
+    except Exception:
+        success = False
+    
+    # Update delivery stats
+    conn = sqlite3.connect(DB_PATH)
+    if success:
+        conn.execute(
+            "UPDATE webhooks SET delivery_count = delivery_count + 1, last_delivery_at = ? WHERE id = ?",
+            (datetime.utcnow().isoformat(), webhook_id)
+        )
+    else:
+        conn.execute(
+            "UPDATE webhooks SET last_delivery_at = ? WHERE id = ?",
+            (datetime.utcnow().isoformat(), webhook_id)
+        )
+    conn.commit()
+    conn.close()
+    return success
+
+
+async def webhook_delivery_loop():
+    """Background task: periodically check for new trends and deliver to matching webhooks."""
+    await asyncio.sleep(10)  # give startup time
+    while True:
+        try:
+            await process_webhook_deliveries()
+        except Exception as e:
+            print(f"[Webhook] Delivery loop error: {e}")
+        await asyncio.sleep(3600)  # check every hour
+
+
+async def process_webhook_deliveries():
+    """Check webhooks and deliver matching trends."""
+    now = datetime.utcnow()
+    
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    
+    # Get all active webhooks
+    cursor = conn.execute("SELECT * FROM webhooks WHERE is_active = 1")
+    webhooks = [dict(r) for r in cursor.fetchall()]
+    
+    if not webhooks:
+        conn.close()
+        return
+    
+    # Get recent trends (last 1 hour for paid, last 6 hours for free)
+    paid_cutoff = (now - timedelta(hours=1)).isoformat()
+    free_cutoff = (now - timedelta(hours=6)).isoformat()
+    
+    for wh in webhooks:
+        tier = wh.get("tier", "free")
+        cutoff = paid_cutoff if tier == "paid" else free_cutoff
+        
+        # Build query for matching trends
+        query = "SELECT id, keyword, source, title, content_clean, heat, heat_level, category, tags, monetization_tags, updated_at FROM clean_trend WHERE updated_at >= ?"
+        params = [cutoff]
+        
+        if wh.get("categories"):
+            cats = json.loads(wh["categories"]) if isinstance(wh["categories"], str) else wh["categories"]
+            if cats:
+                placeholders = " OR ".join(["category LIKE ?" for _ in cats])
+                query += f" AND ({placeholders})"
+                params.extend([f"%{c}%" for c in cats])
+        
+        if wh.get("min_heat"):
+            query += " AND heat >= ?"
+            params.append(wh["min_heat"])
+        
+        if wh.get("source_filter"):
+            sources = json.loads(wh["source_filter"]) if isinstance(wh["source_filter"], str) else wh["source_filter"]
+            if sources:
+                placeholders = " OR ".join(["source = ?" for _ in sources])
+                query += f" AND ({placeholders})"
+                params.extend(sources)
+        
+        query += " ORDER BY heat DESC LIMIT 20"
+        
+        try:
+            cursor2 = conn.execute(query, params)
+            trends = [dict(r) for r in cursor2.fetchall()]
+        except Exception as e:
+            print(f"[Webhook] Query error for {wh['id']}: {e}")
+            continue
+        
+        if not trends:
+            continue
+        
+        # If daily_digest event type, bundle all trends into one payload
+        if wh.get("event_type") == "daily_digest":
+            payload = {
+                "event": "daily_digest",
+                "webhook_id": wh["id"],
+                "timestamp": now.isoformat(),
+                "trends": trends
+            }
+            await deliver_webhook(wh["id"], wh["url"], payload)
+        else:
+            # Send each trend individually
+            for trend in trends:
+                payload = {
+                    "event": wh.get("event_type", "new_trend"),
+                    "webhook_id": wh["id"],
+                    "timestamp": now.isoformat(),
+                    "trend": trend
+                }
+                await deliver_webhook(wh["id"], wh["url"], payload)
+    
+    conn.close()
+
+
+# ─── Webhook API Endpoints ───
+
+@limiter.limit("10/minute")
+@app.post("/v1/webhooks", response_model=WebhookCreateResponse)
+async def create_webhook(
+    request: Request,
+    body: WebhookCreateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create a new webhook subscription."""
+    tier = await get_user_tier(api_key)
+    max_webhooks = get_webhook_count_for_tier(api_key)
+    
+    # Count existing webhooks for this IP/user
+    ip = get_remote_address(request)
+    conn = sqlite3.connect(DB_PATH)
+    count = conn.execute("SELECT COUNT(*) FROM webhooks WHERE is_active = 1").fetchone()[0]
+    
+    if count >= max_webhooks:
+        conn.close()
+        extra_msg = " Upgrade to paid tier for up to 10 webhooks." if tier == "free" else ""
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Webhook limit reached ({max_webhooks}).{extra_msg}"
+        )
+    
+    # Validate URL
+    url_valid = await validate_webhook_url(body.url)
+    if not url_valid:
+        conn.close()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Webhook URL is not reachable. Please provide a valid, accessible URL."
+        )
+    
+    webhook_id = str(uuid.uuid4())
+    now_iso = datetime.utcnow().isoformat()
+    
+    conn.execute(
+        """INSERT INTO webhooks (id, url, categories, min_heat, source_filter, event_type, created_at, tier)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            webhook_id,
+            body.url,
+            json.dumps(body.categories) if body.categories else None,
+            body.min_heat,
+            json.dumps(body.source_filter) if body.source_filter else None,
+            body.event_type or "new_trend",
+            now_iso,
+            tier,
+        )
+    )
+    conn.commit()
+    conn.close()
+    
+    return WebhookCreateResponse(webhook_id=webhook_id, status="active")
+
+
+@limiter.limit("10/minute")
+@app.get("/v1/webhooks", response_model=List[WebhookResponse])
+async def list_webhooks(
+    request: Request,
+    api_key: str = Depends(verify_api_key)
+):
+    """List all webhooks for this account (by IP)."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute("SELECT * FROM webhooks ORDER BY created_at DESC")
+    rows = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    
+    return [
+        WebhookResponse(
+            id=r["id"],
+            url=r["url"],
+            categories=r["categories"],
+            min_heat=r["min_heat"],
+            source_filter=r["source_filter"],
+            event_type=r["event_type"],
+            is_active=bool(r["is_active"]),
+            created_at=r["created_at"],
+            last_delivery_at=r["last_delivery_at"],
+            delivery_count=r["delivery_count"],
+            tier=r["tier"],
+        )
+        for r in rows
+    ]
+
+
+@limiter.limit("10/minute")
+@app.delete("/v1/webhooks/{webhook_id}")
+async def delete_webhook(
+    request: Request,
+    webhook_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Delete a webhook by ID."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.execute("SELECT id FROM webhooks WHERE id = ?", (webhook_id,))
+    existing = cursor.fetchone()
+    
+    if not existing:
+        conn.close()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found.")
+    
+    conn.execute("DELETE FROM webhooks WHERE id = ?", (webhook_id,))
+    conn.commit()
+    conn.close()
+    
+    return {"status": "deleted", "webhook_id": webhook_id}
+
+
+@limiter.limit("5/minute")
+@app.post("/v1/webhooks/{webhook_id}/test")
+async def test_webhook(
+    request: Request,
+    webhook_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Send a test event to a webhook URL."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute("SELECT * FROM webhooks WHERE id = ?", (webhook_id,))
+    row = cursor.fetchone()
+    
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found.")
+    
+    wh = dict(row)
+    conn.close()
+    
+    test_payload = {
+        "event": "test",
+        "webhook_id": webhook_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        "message": "This is a test event from Chinese Trending Data API webhook system.",
+        "trend": {
+            "id": 0,
+            "keyword": "[test] AI在中国的最新发展",
+            "source": "weibo",
+            "title": "AI在中国的最新发展",
+            "heat": 5000000,
+            "heat_level": "viral",
+            "category": "科技"
+        }
+    }
+    
+    success = await deliver_webhook(webhook_id, wh["url"], test_payload)
+    
+    if success:
+        return {"status": "sent", "webhook_id": webhook_id, "url": wh["url"]}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to deliver test event to {wh['url']}. Check the URL or make sure your endpoint is accessible."
+        )
 
 
 if __name__ == "__main__":
