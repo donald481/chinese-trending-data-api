@@ -18,9 +18,11 @@ _script_dir = Path(__file__).resolve().parent
 if (_script_dir.parent.name == ".hermes" and _script_dir.name == "scripts"):
     # Running from ~/.hermes/scripts/ — use absolute project path
     DB_PATH = Path("/home/ubuntu/projects/arbitrage_api/data/clean_data.db")
+    USAGE_DB_PATH = Path("/home/ubuntu/projects/arbitrage_api/server/api_usage.db")
 else:
     # Running from project directory
     DB_PATH = _script_dir.parent / "data" / "clean_data.db"
+    USAGE_DB_PATH = _script_dir.parent / "server" / "api_usage.db"
 HEALTH_URL = "http://localhost:8900/health"
 BEIJING_TZ = timezone(timedelta(hours=8))
 
@@ -80,6 +82,47 @@ def query_db() -> dict:
     return result
 
 
+def query_api_usage() -> dict:
+    """Query api_usage.db for call stats in last 24h."""
+    result = {"total_calls": 0, "external_users": 0, "external_calls": 0, "self_calls": 0}
+    usage_db = str(USAGE_DB_PATH)
+    if not Path(usage_db).exists():
+        return result
+
+    try:
+        conn = sqlite3.connect(usage_db)
+        cursor = conn.cursor()
+
+        yesterday = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+
+        # Total calls in last 24h
+        cursor.execute(
+            "SELECT COUNT(*) FROM api_usage_log WHERE timestamp >= ?", (yesterday,)
+        )
+        result["total_calls"] = cursor.fetchone()[0]
+
+        # Self-test vs external calls
+        cursor.execute(
+            "SELECT COUNT(*) FROM api_usage_log WHERE timestamp >= ? AND ip = '127.0.0.1'",
+            (yesterday,),
+        )
+        result["self_calls"] = cursor.fetchone()[0]
+        result["external_calls"] = result["total_calls"] - result["self_calls"]
+
+        # Count unique external IPs
+        cursor.execute(
+            "SELECT COUNT(DISTINCT ip) FROM api_usage_log WHERE timestamp >= ? AND ip != '127.0.0.1'",
+            (yesterday,),
+        )
+        result["external_users"] = cursor.fetchone()[0]
+
+        conn.close()
+    except Exception:
+        pass
+
+    return result
+
+
 def format_kv(items: dict, sep: str = " | ") -> str:
     """Format a dict as 'key val key val ...' entries."""
     return sep.join(f"{k} {v}" for k, v in items.items())
@@ -95,7 +138,10 @@ def main():
     # 2. DB stats
     stats = query_db()
 
-    # 3. Build report
+    # 3. API usage stats
+    usage = query_api_usage()
+
+    # 4. Build report
     lines = [
         "📊 Chinese Trending API 日报",
         f"{status_emoji} 服务状态: {status_text}",
@@ -114,8 +160,16 @@ def main():
     src_str = format_kv(stats["sources"])
     lines.append(f"📡 数据源: {src_str}")
 
+    # API usage in last 24h
+    if usage["total_calls"] > 0:
+        ext_str = f" | 外部用户{usage['external_users']}人" if usage["external_users"] > 0 else ""
+        lines.append(f"📞 API调用: {usage['total_calls']}次{ext_str}")
+
+    # RapidAPI promotion link
+    lines.append("💰 RapidAPI: https://rapidapi.com/jkk542830/api/chinese-trending-data-api")
+
     # Timestamp
-    lines.append(f"⏰ 更新时间: {time_str}")
+    lines.append(f"⏰ {time_str}")
 
     # Output
     report = "\n".join(lines)

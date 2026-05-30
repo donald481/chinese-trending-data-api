@@ -44,7 +44,7 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 - **Monetization tags** — each trend is analyzed for commercial value (e.g., "Safety Equipment", "Celebrity Merchandise", "Gaming Hardware")
 - **Heat scoring & categorization** — know exactly how viral something is and which category it belongs to
 
-> **3,577 data points** and growing. Updated continuously. Ready for developers, traders, researchers, and content strategists.
+> **6,700+ data points** and growing. Updated every 4 hours. Ready for developers, traders, researchers, and content strategists.
 
 ---
 
@@ -79,7 +79,7 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 | `douyin` | Douyin (TikTok China) | Short Video | 288 |
 | `bilibili` | Bilibili | Video/Anime | 400 |
 | `zhihu` | Zhihu | Q&A Community | 355 |
-| **Total** | | | **3,577** |
+| **Total** | | | **6,700+** |
 
 ---
 
@@ -192,7 +192,7 @@ curl -s http://161.153.56.113:8900/v1/stats | jq .
 
 ```json
 {
-  "total_trends": 3577,
+  "total_trends": 6573,
   "sources": {
     "baidu": 408, "baidu_api": 478, "bilibili": 400,
     "douyin": 288, "toutiao": 495, "weibo": 582,
@@ -412,7 +412,7 @@ Monetization tags directly highlight product opportunities. A viral trend about 
 │                    ┌────────▼────────┐                            │
 │                    │   SQLite DB     │                            │
 │                    │  clean_data.db  │                            │
-│                    │  3,577 records  │                            │
+│ │ 6,700+ records │ │
 │                    └────────┬────────┘                            │
 │                             │                                     │
 │                    ┌────────▼────────┐                            │
