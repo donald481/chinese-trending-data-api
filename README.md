@@ -44,7 +44,7 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 - **Monetization tags** — each trend is analyzed for commercial value (e.g., "Safety Equipment", "Celebrity Merchandise", "Gaming Hardware")
 - **Heat scoring & categorization** — know exactly how viral something is and which category it belongs to
 
-> **12,800+ data points** and growing. Updated every 4 hours. Ready for developers, traders, researchers, and content strategists.
+> **12,798+ data points** and growing. Updated every 4 hours. Ready for developers, traders, researchers, and content strategists.
 
 ---
 
@@ -79,7 +79,7 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 | `bilibili` | Bilibili | Video/Anime | 1,352 |
 | `zhihu` | Zhihu | Q&A Community | 1,285 |
 | `douyin` | Douyin (TikTok China) | Short Video | 980 |
-| **Total** | | | **12,800+** |
+| **Total** | | | **12,798+** |
 
 ---
 
