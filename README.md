@@ -1,14 +1,25 @@
+<!--
+💡 GitHub SEO Keywords:
+chinese trending data api, chinese social media scraper, weibo trending topics api,
+baidu hot search api, zhihu trending api, douyin trending api, bilibili trending api,
+toutiao news api, chinese trend monitor, weibo scraper, china trending topics,
+chinese market intelligence, real-time chinese trends, china social media api
+-->
+
 <p align="center">
-  <img src="https://img.shields.io/badge/RapidAPI-API%20Marketplace-0055FF?style=for-the-badge&logo=rapidapi" alt="RapidAPI">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python">
+  <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api"><img src="https://img.shields.io/badge/RapidAPI-API%20Marketplace-0055FF?style=for-the-badge&logo=rapidapi" alt="Available on RapidAPI"></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge" alt="MIT License">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/FastAPI-2.2.0-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
   <img src="https://img.shields.io/badge/LLM-Enhanced-FF6F00?style=for-the-badge&logo=openai" alt="LLM Enhanced">
-  <img src="https://img.shields.io/badge/Data%20Points-12%2C957-7B68EE?style=for-the-badge" alt="Data Points">
-  <img src="https://img.shields.io/badge/Sources-8%20Platforms-FF4500?style=for-the-badge" alt="8 Sources">
+  <img src="https://img.shields.io/badge/Data%20Points-12%2C957-7B68EE?style=for-the-badge" alt="12,957+ Trending Topics">
+  <img src="https://img.shields.io/badge/Sources-8%20Platforms-FF4500?style=for-the-badge" alt="8 Chinese Platforms">
+  <img src="https://img.shields.io/badge/Updated-Every%204h-00C853?style=for-the-badge" alt="Updated Every 4 Hours">
+  <img src="https://img.shields.io/github/stars/donald481/chinese-trending-data-api?style=for-the-badge&color=yellow" alt="GitHub Stars">
 </p>
 
 <h1 align="center">🇨🇳 Chinese Trending Data API</h1>
-<p align="center"><strong>Real-time trending topics from 8 Chinese platforms — LLM-translated, categorized, with monetization insights</strong></p>
+<p align="center"><strong>Real-time trending topics from 8 Chinese platforms (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao) — LLM-translated, categorized, with monetization insights. The #1 Chinese trending data API on RapidAPI.</strong></p>
 
 <p align="center">
   <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api">🚀 Subscribe on RapidAPI</a> •
