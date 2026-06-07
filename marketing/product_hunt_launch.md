@@ -14,7 +14,7 @@
 
 ## 2. Short Description (max 260 chars)
 
-Real-time trending topics from 8 Chinese platforms (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao & more) with LLM-powered English translations and monetization tags. 3,577 trends, 6 search endpoints, free tier available.
+Real-time trending topics from 8 Chinese platforms (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao & more) with LLM-powered English translations and monetization tags. 12,897 trends, 6 search endpoints, free tier available.
 
 *(252 characters — fits the PH card perfectly)*
 
@@ -24,7 +24,7 @@ Real-time trending topics from 8 Chinese platforms (Weibo, Baidu, Zhihu, Douyin,
 
 ### What It Does
 
-The Chinese Trending Data API is the single endpoint that unlocks real-time trending data from every major Chinese content platform. We scrape, deduplicate, and enrich 3,500+ trending topics every 4 hours — then run them through an LLM pipeline that generates English translations, category tags, heat scores, and even monetization suggestions. No Chinese language skills required. No scraping infrastructure to maintain. One API call.
+The Chinese Trending Data API is the single endpoint that unlocks real-time trending data from every major Chinese content platform. We scrape, deduplicate, and enrich 12,897+ trending topics every 4 hours — then run them through an LLM pipeline that generates English translations, category tags, heat scores, and even monetization suggestions. No Chinese language skills required. No scraping infrastructure to maintain. One API call.
 
 ### Why It Matters
 
@@ -35,7 +35,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 ### 🚀 Key Features
 
 - **🌐 8 Platforms, 1 API** — Weibo, Baidu, Zhihu, Douyin (TikTok CN), Bilibili, Toutiao, Baidu Realtime & Weibo Realtime in a unified JSON schema
-- **📊 3,577+ Active Trends** — With real heat scores (not scraped counts): Weibo reads, Baidu search indices, Zhihu views — up to 99M+
+- **📊 12,897+ Active Trends** — With real heat scores (not scraped counts): Weibo reads, Baidu search indices, Zhihu views — up to 99M+
 - **🤖 LLM-Enriched English** — Every title and every content snippet comes with AI-generated English translation. Zero Chinese knowledge needed
 - **💰 Monetization Tags** — AI suggests how to capitalize on each trend: content ideas, product angles, ad opportunities
 - **🔍 6 Search Endpoints** — Full-text search, category browsing, cross-platform comparison, random sampling, source filtering, sort by heat/rank/date
@@ -49,7 +49,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 
 2. **Market & Sentiment Analysts** — Track Chinese consumer sentiment in real-time. Compare how a topic performs across Weibo (public opinion), Zhihu (deep discussion), and Douyin (viral video) — all from one endpoint.
 
-3. **AI/ML Developers** — Feed fresh Chinese trending data into LLM fine-tuning pipelines, trend prediction models, cross-cultural NLP analysis, or content recommendation engines. 3,500+ labeled, translated records updated continuously.
+3. **AI/ML Developers** — Feed fresh Chinese trending data into LLM fine-tuning pipelines, trend prediction models, cross-cultural NLP analysis, or content recommendation engines. 12,897+ labeled, translated records updated continuously.
 
 4. **E-commerce & Brand Teams** — Spot product trends early. Monitor what Chinese consumers are searching for on Baidu and discussing on Douyin. Align inventory, marketing campaigns, and influencer strategies with real-time demand signals.
 
@@ -90,7 +90,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 >
 > Started with one platform (Weibo hot search). Added Baidu. Then Zhihu. Then Douyin, Bilibili, Toutiao... The data pipeline grew from a weekend hack to a production system scraping 8 platforms simultaneously, deduplicating 1000s of records, and running everything through an LLM pipeline for translation + monetization analysis.
 >
-> **The result is the Chinese Trending Data API** — 3,577+ real-time trends from 8 Chinese platforms, all accessible via REST API, all with AI-generated English translations, heat scores, and monetization tags.
+> **The result is the Chinese Trending Data API** — 12,897+ real-time trends from 8 Chinese platforms, all accessible via REST API, all with AI-generated English translations, heat scores, and monetization tags.
 >
 > Some things I'm most proud of:
 > - **Cross-platform comparison** — Search once, see how a topic ranks across all 8 platforms side-by-side. No other API does this.
@@ -109,7 +109,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 
 ### Image 1 — Hero / Product Overview
 **File:** `ph-gallery-01-hero.png`
-**Style:** Dark theme (matching API docs). Center shows a dashboard-style UI with 8 platform icons (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao, Baidu API, Weibo API) connected by glowing lines to a central "API" node. Data counter "3,577+" displayed prominently. Tagline: "The pulse of China, in one API." RapidAPI and "Free Tier Available" badges.
+**Style:** Dark theme (matching API docs). Center shows a dashboard-style UI with 8 platform icons (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao, Baidu API, Weibo API) connected by glowing lines to a central "API" node. Data counter "12,897+" displayed prominently. Tagline: "The pulse of China, in one API." RapidAPI and "Free Tier Available" badges.
 **Dimensions:** 1920×1080 (standard PH gallery)
 
 ### Image 2 — API Response Example
@@ -127,7 +127,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 **Style:** 4-panel grid layout with icons. Each panel shows a distinct use case with a small illustrative graphic:
 - Panel 1 (🌐 Content Creators): Globe with trending arrows + "Spot trends before they go global"
 - Panel 2 (📈 Market Analysts): Chart going up + "Track Chinese sentiment in real-time"  
-- Panel 3 (🤖 AI/ML Devs): Neural network nodes + "3,500+ translated records for model training"
+- Panel 3 (🤖 AI/ML Devs): Neural network nodes + "12,897+ translated records for model training"
 - Panel 4 (🛒 E-commerce): Shopping cart + "Align inventory with Chinese demand signals"
 **Background:** Gradient dark purple-to-blue. Clean, minimal, readable at thumbnail size.
 **Dimensions:** 1920×1080
@@ -144,7 +144,7 @@ We built the bridge. This is the first API that gives you structured, English-ac
 - [ ] Confirm RapidAPI pricing plans are active (Free, Basic $29, Pro $99)
 - [ ] Set up RapidAPI coupon code **PH50** (50% off first month, 100 redemptions)
 - [ ] Test all 6 endpoints return valid JSON
-- [ ] Verify `/v1/stats` shows accurate total count (3,577+)
+- [ ] Verify `/v1/stats` shows accurate total count (12,897+)
 - [ ] Polish docs page at http://161.153.56.113:8900/
 - [ ] Create 5 gallery images matching descriptions above
 - [ ] Prepare Maker avatar and bio for PH profile
