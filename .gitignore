@@ -53,3 +53,4 @@ certs/
 # API keys and secrets
 *.key
 *.pem
+.git-credentials
