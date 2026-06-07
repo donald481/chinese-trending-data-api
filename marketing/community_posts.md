@@ -33,7 +33,7 @@ I just launched **Chinese Trending Data API** on RapidAPI — a single endpoint 
 - **60+ categories**: tech, finance, entertainment, sports, news, gaming...
 - **Auto-updated**: Pipeline runs every 4 hours
 
-**Free tier:** 5 calls/day to try it out.
+**Free tier:** 5 calls per day to try it out.
 
 **Use cases:** Content creators tracking Chinese trends before they go global, market analysts tracking consumer sentiment, AI/ML developers building trend prediction models, e-commerce spotting product trends early.
 
@@ -55,7 +55,7 @@ The data pipeline scrapes all 8 sources every 4 hours, deduplicates, categorizes
 
 Key technical details:
 - FastAPI backend with SQLite storage
-- Free tier with rate limiting (5 calls/day)
+- Free tier with rate limiting (5 calls per day)
 - SlowAPI for per-IP rate limiting
 - Response headers include X-RateLimit-Remaining so consumers can plan
 - 429 responses include upgrade URL and plan details
@@ -110,7 +110,7 @@ A single API call returns:
 
 ### Free Tier
 
-5 calls/day, no credit card required. Check it out:
+5 calls per day, no credit card required. Check it out:
 
 👉 https://rapidapi.com/jkk542830/api/chinese-trending-data-api
 
