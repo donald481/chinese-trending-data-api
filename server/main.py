@@ -185,9 +185,15 @@ def health_check():
     return {"status": "healthy", "version": "2.4.0", "database": "clean_data.db", "sources": 8}
 
 
-# ─── API调用日志中间件 ───
+# ─── API调用日志中间件（含RapidAPI subscriber追踪）───
 @app.middleware("http")
 async def log_api_usage(request: Request, call_next):
+    # 提取RapidAPI subscriber信息（RapidAPI代理模式自动注入的headers）
+    rapidapi_subscriber = request.headers.get("X-RapidAPI-Subscriber", "")
+    rapidapi_plan = request.headers.get("X-RapidAPI-Plan", "")
+    user_agent = request.headers.get("User-Agent", "")[:500]  # 截断防止超长
+    request_id = request.headers.get("X-RapidAPI-Request-ID", "")
+
     response = await call_next(request)
 
     # 获取API Key类型（由verify_api_key设置在request.state中）
@@ -201,17 +207,21 @@ async def log_api_usage(request: Request, call_next):
             endpoint=path,
             api_key_type=api_key_type,
             response_status=response.status_code,
+            rapidapi_subscriber=rapidapi_subscriber or None,
+            rapidapi_plan=rapidapi_plan or None,
+            user_agent=user_agent or None,
+            request_id=request_id or None,
         )
 
-        # 为免费用户添加剩余额度响应头
-        if api_key_type == "free" and path in FREE_TIER_LIMITS:
-            daily_count = request_logger.get_daily_count(get_remote_address(request), path)
-            limit = FREE_TIER_LIMITS[path]
-            remaining = max(0, limit - daily_count)
-            response.headers["X-RateLimit-Limit"] = str(limit)
-            response.headers["X-RateLimit-Remaining"] = str(remaining)
-            if remaining <= 1:
-                response.headers["X-Upgrade-URL"] = "https://rapidapi.com/jkk542830/api/chinese-trending-data-api"
+    # 为免费用户添加剩余额度响应头
+    if api_key_type == "free" and path in FREE_TIER_LIMITS:
+        daily_count = request_logger.get_daily_count(get_remote_address(request), path)
+        limit = FREE_TIER_LIMITS[path]
+        remaining = max(0, limit - daily_count)
+        response.headers["X-RateLimit-Limit"] = str(limit)
+        response.headers["X-RateLimit-Remaining"] = str(remaining)
+        if remaining <= 1:
+            response.headers["X-Upgrade-URL"] = "https://rapidapi.com/jkk542830/api/chinese-trending-data-api"
 
     return response
 
@@ -855,6 +865,65 @@ async def test_webhook(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Failed to deliver test event to {wh['url']}. Check the URL or make sure your endpoint is accessible."
         )
+
+
+# ─── 用户追踪统计端点 ───
+ADMIN_SECRET = os.getenv("ADMIN_SECRET", "changeme_admin_key")
+
+async def verify_admin(request: Request):
+    """管理端点鉴权：Bearer token或query param"""
+    auth = request.headers.get("Authorization", "")
+    if auth.startswith("Bearer "):
+        token = auth[7:]
+    else:
+        token = request.query_params.get("admin_key", "")
+    if token != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Admin access required. Provide admin_key param or Bearer token.")
+    return True
+
+
+@app.get("/v1/users/stats")
+async def users_stats(
+    request: Request,
+    day: Optional[str] = Query(None, description="统计日期 (YYYY-MM-DD), 默认今天"),
+    _auth: bool = Depends(verify_admin),
+):
+    """用户追踪统计：按subscriber维度聚合，区分真实用户/Bot/探针"""
+    subscriber_stats = request_logger.get_subscriber_stats(day)
+    plan_distribution = request_logger.get_plan_distribution(day)
+    real_users = request_logger.get_real_users(day, min_calls=2)
+
+    # 汇总指标
+    total_unique = len(subscriber_stats)
+    total_calls = sum(s["total_calls"] for s in subscriber_stats)
+    rapidapi_users = [s for s in subscriber_stats if s.get("rapidapi_subscriber")]
+    direct_users = [s for s in subscriber_stats if not s.get("rapidapi_subscriber")]
+
+    return {
+        "day": day or date.today().isoformat(),
+        "summary": {
+            "total_unique_users": total_unique,
+            "total_api_calls": total_calls,
+            "rapidapi_subscribers": len(rapidapi_users),
+            "direct_ip_users": len(direct_users),
+            "real_users_count": len(real_users),
+        },
+        "plan_distribution": plan_distribution,
+        "real_users": real_users[:50],  # 最多返回50个
+        "all_users": subscriber_stats[:100],  # 完整列表截断
+    }
+
+
+@app.get("/v1/users/{subscriber_id}")
+async def user_detail(
+    request: Request,
+    subscriber_id: str,
+    days: int = Query(default=7, ge=1, le=90, description="回看天数"),
+    _auth: bool = Depends(verify_admin),
+):
+    """单个用户的详细调用记录"""
+    detail = request_logger.get_subscriber_detail(subscriber_id, days)
+    return detail
 
 
 if __name__ == "__main__":
