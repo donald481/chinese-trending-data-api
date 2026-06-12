@@ -3,28 +3,37 @@
 chinese trending data api, chinese social media scraper, weibo trending topics api,
 baidu hot search api, zhihu trending api, douyin trending api, bilibili trending api,
 toutiao news api, chinese trend monitor, weibo scraper, china trending topics,
-chinese market intelligence, real-time chinese trends, china social media api
+chinese market intelligence, real-time chinese trends, china social media api,
+content arbitrage api, cross-border ecommerce data, china consumer trends api,
+chinese viral trends api, china market research api, chinese hot search api
 -->
 
 <p align="center">
   <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api"><img src="https://img.shields.io/badge/RapidAPI-API%20Marketplace-0055FF?style=for-the-badge&logo=rapidapi" alt="Available on RapidAPI"></a>
-  <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge" alt="MIT License">
+  <img src="https://img.shields.io/github/stars/donald481/chinese-trending-data-api?style=for-the-badge&color=yellow" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/donald481/chinese-trending-data-api?style=for-the-badge" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/license/donald481/chinese-trending-data-api?style=for-the-badge&color=green" alt="MIT License">
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python 3.10+">
-  <img src="https://img.shields.io/badge/FastAPI-2.2.0-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
   <img src="https://img.shields.io/badge/LLM-Enhanced-FF6F00?style=for-the-badge&logo=openai" alt="LLM Enhanced">
-  <img src="https://img.shields.io/badge/Data%20Points-13%2C049-7B68EE?style=for-the-badge" alt="12,957+ Trending Topics">
+  <img src="https://img.shields.io/badge/Data%20Points-13%2C784-7B68EE?style=for-the-badge" alt="13,784+ Trending Topics">
   <img src="https://img.shields.io/badge/Sources-8%20Platforms-FF4500?style=for-the-badge" alt="8 Chinese Platforms">
   <img src="https://img.shields.io/badge/Updated-Every%204h-00C853?style=for-the-badge" alt="Updated Every 4 Hours">
-  <img src="https://img.shields.io/github/stars/donald481/chinese-trending-data-api?style=for-the-badge&color=yellow" alt="GitHub Stars">
 </p>
 
 <h1 align="center">🇨🇳 Chinese Trending Data API</h1>
-<p align="center"><strong>Real-time trending topics from 8 Chinese platforms (Weibo, Baidu, Zhihu, Douyin, Bilibili, Toutiao) — LLM-translated, categorized, with monetization insights. The #1 Chinese trending data API on RapidAPI.</strong></p>
+<p align="center"><strong>Real-time trending topics from 8 Chinese platforms — Weibo, Baidu, Douyin, Bilibili, Zhihu, Toutiao. LLM-translated, categorized, with monetization insights. The #1 Chinese trending data API on RapidAPI.</strong></p>
 
 <p align="center">
   <a href="https://rapidapi.com/jkk542830/api/chinese-trending-data-api">🚀 Subscribe on RapidAPI</a> •
   <a href="http://161.153.56.113:8900/docs">📖 API Docs</a> •
-  <a href="http://161.153.56.113:8900/v1/stats">📊 Live Stats</a>
+  <a href="http://161.153.56.113:8900/v1/stats">📊 Live Stats</a> •
+  <a href="CASE_STUDIES.md">💡 Case Studies</a>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> •
+  <a href="README_CN.md">中文</a>
 </p>
 
 ---
@@ -366,11 +375,13 @@ Free tier users get truncated monetization tags and translated content as a prev
 
 ## 💡 Use Cases
 
+> 📖 **[See detailed case studies →](CASE_STUDIES.md)** with real examples, code, and ROI projections.
+
 ### 📈 Content & Media Arbitrage
-Identify viral Chinese trends **before they hit global social media**. Translate, repurpose, and publish English-language content while the trend is still hot. With monetization tags like "Celebrity Merchandise" or "Gaming Hardware", you know exactly where the commercial value is.
+Identify viral Chinese trends **before they hit global social media** — often 48-72 hours earlier. Translate, repurpose, and publish English-language content while the trend is still hot. Monetization tags like "Celebrity Merchandise" or "Gaming Hardware" tell you exactly where the commercial value is. **[→ Read full case study](CASE_STUDIES.md#-case-study-1-content-arbitrage----turn-chinese-viral-trends-into-english-traffic)**
 
 ### 📊 Market Research & Competitive Intel
-Track what's trending across 8 Chinese platforms in real-time. See what products, celebrities, and topics are gaining traction in the world's largest internet market. Category analysis shows which sectors (tech, finance, entertainment) are driving conversation.
+Track what's trending across 8 Chinese platforms in real-time. Cross-platform comparison reveals WHERE to publish (Douyin-heavy = video, Bilibili-heavy = deep-dive, Weibo-heavy = opinion posts). At $99/month, it's **95%+ savings** vs. traditional quarterly reports. **[→ Read full case study](CASE_STUDIES.md#-case-study-2-market-research----multi-platform-trend-intelligence)**
 
 ### 🔍 SEO & Content Strategy
 Find underserved English-language topics by identifying high-heat Chinese trends that have no English coverage. The LLM translations give you ready-made content angles. Target keywords before they become competitive.
@@ -382,7 +393,7 @@ Every record includes raw Chinese text, LLM-translated English, category labels,
 Track social sentiment on finance, real estate, and economic topics across Chinese platforms. Heat scores provide a quantitative measure of public attention on specific stocks, sectors, or economic issues.
 
 ### 🛒 E-commerce & Dropshipping
-Monetization tags directly highlight product opportunities. A viral trend about "workout equipment" or "skincare routines" tells you exactly what to promote. Get ahead of demand curves by watching Chinese consumer trends.
+Monetization tags directly highlight product opportunities. A viral trend about "workout equipment" or "skincare routines" tells you exactly what to promote. Get ahead of demand curves by watching Chinese consumer trends — reduce dead inventory from 70-80% to 30-40%. **[→ Read full case study](CASE_STUDIES.md#-case-study-3-e-commerce-product-selection----monetization-tags-that-sell)**
 
 ---
 
