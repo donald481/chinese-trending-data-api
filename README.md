@@ -16,7 +16,7 @@ chinese viral trends api, china market research api, chinese hot search api
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
   <img src="https://img.shields.io/badge/LLM-Enhanced-FF6F00?style=for-the-badge&logo=openai" alt="LLM Enhanced">
-  <img src="https://img.shields.io/badge/Data%20Points-1%2C610-7B68EE?style=for-the-badge" alt="13,784+ Trending Topics">
+  <img src="https://img.shields.io/badge/Data%20Points-2%2C895-7B68EE?style=for-the-badge" alt="13,784+ Trending Topics">
   <img src="https://img.shields.io/badge/Sources-8%20Platforms-FF4500?style=for-the-badge" alt="8 Chinese Platforms">
   <img src="https://img.shields.io/badge/Updated-Every%204h-00C853?style=for-the-badge" alt="Updated Every 4 Hours">
 </p>
@@ -64,7 +64,7 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 - **Monetization tags** — each trend is analyzed for commercial value (e.g., "Safety Equipment", "Celebrity Merchandise", "Gaming Hardware")
 - **Heat scoring & categorization** — know exactly how viral something is and which category it belongs to
 
-> **1,610+ data points** and growing. Updated every 4 hours. Ready for developers, traders, researchers, and content strategists.
+> **2,895+ data points** and growing. Updated every 4 hours. Ready for developers, traders, researchers, and content strategists.
 
 ---
 
@@ -91,15 +91,15 @@ China's internet is a **massive, fast-moving trend engine** — but it's locked 
 
 | Source | Platform | Type | Records |
 |--------|----------|------|---------|
-| `weibo` | Sina Weibo | Microblogging | 241 |
-| `weibo_api` | Weibo (API) | Microblogging | 244 |
-| `toutiao` | Toutiao | News Aggregator | 212 |
-| `baidu_api` | Baidu (API) | Search Engine | 218 |
-| `baidu` | Baidu | Search Engine | 182 |
-| `bilibili` | Bilibili | Video/Anime | 190 |
-| `zhihu` | Zhihu | Q&A Community | 182 |
-| `douyin` | Douyin (TikTok China) | Short Video | 141 |
-| **Total** | | | **1,610+** |
+| `weibo` | Sina Weibo | Microblogging | 442 |
+| `weibo_api` | Weibo (API) | Microblogging | 467 |
+| `toutiao` | Toutiao | News Aggregator | 399 |
+| `baidu_api` | Baidu (API) | Search Engine | 412 |
+| `baidu` | Baidu | Search Engine | 325 |
+| `bilibili` | Bilibili | Video/Anime | 321 |
+| `zhihu` | Zhihu | Q&A Community | 304 |
+| `douyin` | Douyin (TikTok China) | Short Video | 225 |
+| **Total** | | | **2,895+** |
 
 ---
 
@@ -434,7 +434,7 @@ Monetization tags directly highlight product opportunities. A viral trend about 
 │                    ┌────────▼────────┐                            │
 │                    │   SQLite DB     │                            │
 │                    │  clean_data.db  │                            │
-│ │ 1,610+ records │ │
+│ │ 2,895+ records │ │
 │                    └────────┬────────┘                            │
 │                             │                                     │
 │                    ┌────────▼────────┐                            │
